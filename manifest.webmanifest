@@ -1,0 +1,16 @@
+{
+  "name": "条文スナイパー",
+  "short_name": "条文スナイパー",
+  "description": "用語・論点・事例から条文番号を撃ち抜く、司法試験の条文特定トレーニング",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070b15",
+  "theme_color": "#0b1222",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

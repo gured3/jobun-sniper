@@ -1,0 +1,1758 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="条文スナイパー">
+<meta name="theme-color" content="#0b1222">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<title>条文スナイパー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky noir header; quiz stage = question → dial → TOC (縦) or [question/dial | tall TOC] (横). Single dark theme by request. */
+:root{
+  --bg:#070b15;
+  --bg2:#0b1222;
+  --surface:#101a2e;
+  --surface2:#16233d;
+  --raise:#1d2d4d;
+  --line:#26385a;
+  --fg:#eef3fb;
+  --muted:#94a5c4;
+  --dim:#5b6c8c;
+  --cyan:#41b6ff;
+  --cyan-ink:#03182b;
+  --green:#3fe0a2;
+  --green-ink:#03281b;
+  --gold:#f2c14f;
+  --gold-ink:#2b1d02;
+  --bad:#ff5d6c;
+  --f-disp:"Dela Gothic One","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;
+  --f-num:"Bebas Neue","DIN Condensed","Arial Narrow",sans-serif;
+  --f-body:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Meiryo",system-ui,sans-serif;
+  --qfs:26px;
+  --r:14px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;transition:none!important}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--fg);margin:0}
+body{font:15px/1.65 var(--f-body);-webkit-text-size-adjust:100%;touch-action:manipulation}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-disp);font-weight:400;margin:0;text-wrap:balance;line-height:1.35;letter-spacing:.02em}
+kbd{font:600 11px var(--f-body);padding:1px 6px;border-radius:6px;background:rgba(0,0,0,.2);margin-left:6px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.028) 22px 23px),var(--bg2);border-bottom:2px solid #000;box-shadow:0 1px 0 var(--line)}
+.bar{max-width:1200px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:9px;flex:none}
+.brand svg{width:32px;height:32px;flex:none}
+.brand b{font:400 19px var(--f-disp);letter-spacing:.03em;white-space:nowrap}
+.brand b span{color:var(--gold)}
+.tabs{display:flex;gap:4px;margin-left:auto}
+.tabs button{border:0;background:transparent;color:var(--muted);font:700 14px var(--f-body);padding:8px 12px;border-radius:10px;position:relative}
+.tabs button.on{background:var(--surface2);color:var(--fg);box-shadow:inset 0 -2px 0 var(--cyan)}
+.tabs button i{font-style:normal;font:800 11px var(--f-body);background:var(--bad);color:#2b0710;border-radius:9px;padding:0 6px;margin-left:5px;vertical-align:2px}
+.tabs button i:empty{display:none}
+.tabs .ti{display:none}
+.syncb{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap}
+.syncb.ok{color:var(--green);border-color:#1f6b52}
+.syncb.err{color:var(--bad);border-color:#7a3340}
+
+main{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:14px 40px}
+.view{display:flex;flex-direction:column;gap:14px}
+.narrow{max-width:860px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+/* generic */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.btn{border:0;border-radius:12px;padding:10px 16px;font:800 15px var(--f-body);background:var(--surface2);color:var(--fg);box-shadow:0 3px 0 #000;display:inline-flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #000}
+.btn.go{background:var(--gold);color:var(--gold-ink);box-shadow:0 4px 0 #a97c17}
+.btn.go:active{box-shadow:0 1px 0 #a97c17}
+.btn.pri{background:var(--cyan);color:var(--cyan-ink);box-shadow:0 4px 0 #1f73b0}
+.btn.pri:active{box-shadow:0 1px 0 #1f73b0}
+.btn.grn{background:var(--green);color:var(--green-ink);box-shadow:0 4px 0 #1c9468}
+.btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--muted)}
+.btn.danger{background:transparent;border:1px solid #7a3340;box-shadow:none;color:var(--bad)}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:10px}
+.btn[disabled]{opacity:.5;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:999px;padding:6px 14px;font:700 14px var(--f-body);white-space:nowrap;touch-action:manipulation}
+.chip.on{background:var(--cyan);border-color:var(--cyan);color:var(--cyan-ink)}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips.scroll::-webkit-scrollbar{display:none}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+input.t,select.t,textarea.t{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--fg);width:100%;min-width:0;font-size:16px}
+textarea.t{resize:vertical;line-height:1.6}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+.chk{display:flex;align-items:center;gap:10px;font-size:15px}
+.chk input{width:22px;height:22px;accent-color:var(--cyan)}
+.help{font-size:14px;line-height:1.8}
+.help summary{cursor:pointer;color:var(--cyan);font-weight:700}
+.help ol{padding-left:1.3em;margin:6px 0}
+code{background:var(--bg);padding:1px 6px;border-radius:6px;font-size:.92em}
+
+/* controls */
+.ctrl{gap:10px}
+.ctrl details summary{cursor:pointer;color:var(--muted);font:700 13px var(--f-body);list-style:none;display:inline-flex;align-items:center;gap:6px}
+.ctrl details summary::-webkit-details-marker{display:none}
+.ctrl details summary::before{content:"▸";font-size:11px}
+.ctrl details[open] summary::before{content:"▾"}
+.ctrl .inner{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.seg{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface2)}
+.seg span{font-size:12px;color:var(--muted);padding:0 10px;white-space:nowrap}
+.seg button{border:0;background:transparent;color:var(--muted);padding:7px 11px;font:700 13px var(--f-body);border-left:1px solid var(--line);white-space:nowrap}
+.seg button.on{background:var(--green);color:var(--green-ink)}
+.segs{display:flex;flex-wrap:wrap;gap:8px}
+.modebar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#123a33;border:1px solid #1f6b52;color:var(--green);border-radius:12px;padding:8px 12px;font-weight:700}
+
+/* stage layouts */
+.stage{display:flex;flex-direction:column;gap:14px;max-width:860px;width:100%;margin:0 auto}
+.stage .mainCol{display:flex;flex-direction:column;gap:14px;min-width:0}
+.stage.h{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,310px);align-items:start;max-width:none}
+.stage.h.notoc{grid-template-columns:minmax(0,1fr);max-width:900px}
+.stage.h .tocCol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);height:calc(100vh - 96px);height:calc(100dvh - 96px)}
+.stage.h .toc{height:100%}
+.stage.h .toc ul{max-height:none}
+
+/* question */
+.qcard{position:relative;background:linear-gradient(180deg,var(--surface),#0d1628);border:1px solid var(--line);border-radius:18px;padding:18px 20px 16px;
+  background-image:
+    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
+    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
+    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
+    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
+    linear-gradient(180deg,var(--surface),#0d1628);
+  background-size:18px 2px,2px 18px,18px 2px,2px 18px,18px 2px,2px 18px,18px 2px,2px 18px,100% 100%;
+  background-position:8px 8px,8px 8px,calc(100% - 8px) 8px,calc(100% - 8px) 8px,8px calc(100% - 8px),8px calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),0 0;
+  background-repeat:no-repeat}
+.qtags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font:700 12px var(--f-body);border-radius:7px;padding:2px 8px;background:var(--surface2);color:var(--muted)}
+.tag.s{background:var(--cyan);color:var(--cyan-ink)}
+.tag.t{background:#173d36;color:var(--green)}
+.tag.u{background:#3a3218;color:var(--gold)}
+.qtools{margin-left:auto;display:flex;align-items:center;gap:6px}
+.fsb{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:8px;min-width:38px;height:30px;padding:0 6px;font:800 13px var(--f-body);white-space:nowrap}
+.timer{font:400 30px/1 var(--f-num);letter-spacing:.04em;color:var(--muted);font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+.timer small{font:700 11px var(--f-body);margin-left:2px}
+.qtext{font:700 var(--qfs)/1.5 var(--f-body);margin:14px 0 6px;overflow-wrap:anywhere}
+.qhint{margin:0;color:var(--muted);font-size:13px}
+.empty{color:var(--muted);margin:6px 0}
+
+/* toc */
+.toc{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;min-height:0}
+.toc h3{font:700 13px var(--f-body);color:var(--muted);margin-bottom:6px}
+.toc ul{list-style:none;margin:0;padding:0;max-height:260px;overflow:auto;display:grid;gap:1px;align-content:start}
+.toc li{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:3px 6px;border-radius:6px}
+.toc li.l1{font-weight:700;color:var(--fg)}
+.toc li.l2{padding-left:18px;color:var(--muted)}
+.toc li.l3{padding-left:30px;color:var(--dim)}
+.toc li.hit{background:rgba(242,193,79,.14);color:var(--gold)}
+.toc .rng{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--cyan)}
+
+/* answer */
+.ans{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.fld{display:flex;gap:12px;align-items:flex-start}
+.fl{flex:none;width:30px;height:30px;border-radius:9px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font:400 15px var(--f-disp);color:var(--gold);margin-top:2px}
+.fld>.body{flex:1;min-width:0}
+.dial{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.wheel{display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,#151f33,#0a101d);border:1px solid #31456b;border-radius:14px;width:60px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 3px 0 #000}
+.wheel button{border:0;background:transparent;color:var(--cyan);width:100%;height:36px;font-size:15px;touch-action:none}
+.wheel button:active{background:rgba(65,182,255,.12)}
+.dg{font:400 46px/1 var(--f-num);font-variant-numeric:tabular-nums;height:52px;display:grid;place-items:center;width:100%;border-block:1px solid #31456b;background:#050912;color:var(--fg);padding-top:4px}
+.dg.lz{color:#36486a}
+.wl{font-size:10px;color:var(--dim);padding:2px 0 4px}
+.wheel.eda{border-color:#8a6a1e}
+.wheel.eda .dg{color:var(--gold)}
+.jo{font:400 15px var(--f-disp);color:var(--muted);padding:0 2px}
+.dialtools{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}
+.numchips{display:flex;flex-wrap:wrap;gap:6px}
+.numchips button{min-width:44px;height:42px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);color:var(--fg);font:400 22px/1 var(--f-num);padding-top:3px;touch-action:manipulation}
+.numchips button.none{font:700 12px var(--f-body);color:var(--muted);min-width:52px;padding:0}
+.numchips button.on{background:var(--cyan);border-color:var(--cyan);color:var(--cyan-ink)}
+.tin{display:flex;align-items:center;gap:8px}
+.tin input{max-width:180px;font:400 30px var(--f-num);text-align:center;letter-spacing:.04em}
+.tin .u{font:400 16px var(--f-disp);color:var(--muted)}
+.preview{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:12px;color:var(--muted);font-size:13px}
+.preview b{font:700 24px var(--f-body);color:var(--fg)}
+.ans .acts .btn.go{min-width:170px;font-size:17px}
+.err{color:var(--bad);font-size:13px;margin:0}
+
+/* result */
+.res{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;border-left:6px solid var(--c)}
+.res.v1{--c:var(--gold)} .res.v2{--c:var(--cyan)} .res.v3{--c:var(--green)} .res.v4{--c:var(--bad)}
+.verdict{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.vlabel{font:400 30px var(--f-disp);color:var(--c)}
+.pts{font:400 46px/1 var(--f-num);font-variant-numeric:tabular-nums}
+.pts small{font:700 12px var(--f-body);color:var(--muted);margin-left:4px}
+.meter{height:10px;border-radius:6px;background:var(--bg);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--c)}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:0}
+.cmp div{background:var(--bg);border-radius:10px;padding:8px 11px}
+.cmp dt{font-size:11px;color:var(--muted)}
+.cmp dd{margin:0;font:700 19px var(--f-body);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.cmp dd.ok{color:var(--gold)}
+.note{margin:0;font-size:15px;background:var(--bg);border-radius:10px;padding:8px 11px}
+.where{margin:0;font-size:13px;color:var(--muted)}
+.sess{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px;padding:0 4px;max-width:860px;width:100%;margin:0 auto}
+.sess b{color:var(--fg);font:400 17px var(--f-num);letter-spacing:.03em}
+
+/* effects (only short bursts on near hits) */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60;display:grid;place-items:center}
+#fx .fxw{position:relative;width:240px;height:240px;display:grid;place-items:center}
+#fx svg{position:absolute;inset:0;width:100%;height:100%;animation:fxZoom .85s cubic-bezier(.2,.8,.2,1) both}
+#fx .ring{position:absolute;inset:60px;border-radius:50%;border:4px solid var(--fxc);animation:fxRing .7s ease-out both}
+#fx .txt{position:relative;font:400 54px var(--f-disp);color:var(--fxc);text-shadow:0 4px 0 #000,0 0 24px rgba(0,0,0,.7);animation:fxText .95s ease-out both;white-space:nowrap}
+#fx .txt small{display:block;text-align:center;font:400 22px var(--f-num);letter-spacing:.3em;color:var(--fg)}
+#fx .p{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:2px;background:var(--fxc);animation:fxBurst .8s ease-out both}
+#fx .p:nth-child(3n){background:var(--fg);border-radius:50%}
+#fx .p:nth-child(3n+1){background:var(--cyan)}
+@keyframes fxZoom{0%{transform:scale(1.9) rotate(-40deg);opacity:0}45%{transform:scale(1) rotate(0);opacity:1}80%{opacity:1}100%{transform:scale(.9);opacity:0}}
+@keyframes fxRing{0%{transform:scale(.3);opacity:1}100%{transform:scale(2.4);opacity:0}}
+@keyframes fxText{0%{transform:scale(.3);opacity:0}30%{transform:scale(1.15);opacity:1}45%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+@keyframes fxBurst{0%{transform:translate(0,0) rotate(0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(220deg) scale(.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){#fx{display:none!important}}
+
+/* lists */
+.vhead{display:flex;flex-direction:column;gap:6px}
+.vhead p{margin:0;color:var(--muted);font-size:14px}
+.vrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.item .rk{font:400 26px var(--f-num);color:var(--dim);width:30px;text-align:center}
+.item .rk.top{color:var(--bad)}
+.item .p{font-weight:700;overflow-wrap:anywhere}
+.item .meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:3px 12px;margin-top:3px}
+.item .meta b{color:var(--fg)}
+.item .ops{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.mbar{height:6px;border-radius:4px;background:var(--bg);margin-top:6px;overflow:hidden;max-width:260px}
+.mbar i{display:block;height:100%;background:var(--bad)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font:700 12px var(--f-body);color:var(--muted)}
+th:first-child,td:first-child{text-align:left}
+td.lo{color:var(--bad)} td.hi{color:var(--green)}
+.airow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;background:var(--bg);border-radius:10px;padding:10px}
+.airow .g{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:6px}
+.airow input[type=checkbox]{width:20px;height:20px;margin-top:8px;accent-color:var(--green)}
+.code{font:12px/1.5 ui-monospace,Consolas,monospace;color:var(--muted);background:var(--bg);border-radius:8px;padding:8px 10px;overflow-x:auto;white-space:pre}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--green);color:var(--green-ink);font:800 14px var(--f-body);padding:9px 18px;border-radius:12px;z-index:70;box-shadow:0 4px 0 #1c9468;max-width:calc(100% - 32px)}
+#toast.bad{background:var(--bad);color:#2b0710;box-shadow:0 4px 0 #a33a45}
+
+@media (max-width:760px){
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0;background:var(--bg2);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+  .tabs button{padding:6px 2px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:1px}
+  .tabs button.on{box-shadow:inset 0 2px 0 var(--cyan)}
+  .tabs .ti{display:block;font-size:17px;line-height:1.2}
+  .tabs button i{position:absolute;top:2px;right:8px;margin:0}
+  .syncb{margin-left:auto}
+  main{padding-block:12px 96px}
+  #toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .item{grid-template-columns:auto minmax(0,1fr)}
+  .item .ops{grid-column:1/-1;justify-content:flex-start}
+  .airow .g{grid-template-columns:1fr 1fr}
+  .airow .g .w{grid-column:1/-1}
+  .ans .acts .btn{flex:1}
+  .stage.h .tocCol{height:calc(100vh - 170px);height:calc(100dvh - 170px)}
+}
+@media (max-width:480px){.fld{flex-direction:column;gap:6px}.wheel{width:52px}.dg{font-size:40px;height:48px}.dial{gap:5px}.qcard{padding:16px}}
+@media (max-width:360px){.wheel{width:46px}.dg{font-size:34px}}
+</style>
+
+<header class="top">
+  <div class="bar">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="none" stroke="#41b6ff" stroke-width="2.5"/><circle cx="20" cy="20" r="7" fill="none" stroke="#41b6ff" stroke-width="1.5" opacity=".6"/><path d="M20 1v10M20 29v10M1 20h10M29 20h10" stroke="#41b6ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="20" cy="20" r="3" fill="#f2c14f"/></svg>
+      <b>条文<span>スナイパー</span></b>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-view="quiz" class="on"><span class="ti">◎</span>出題</button>
+      <button data-view="review"><span class="ti">↻</span>復習<i id="revBadge"></i></button>
+      <button data-view="rank"><span class="ti">▤</span>ランキング</button>
+      <button data-view="add"><span class="ti">＋</span>問題追加</button>
+      <button data-view="data"><span class="ti">⇅</span>同期・設定</button>
+    </nav>
+    <button class="syncb" id="syncB" data-act="syncBtn">☁ 未設定</button>
+  </div>
+</header>
+
+<main>
+  <!-- 出題 -->
+  <section class="view" id="v-quiz">
+    <div class="card ctrl">
+      <div class="chips scroll" id="subjChips"></div>
+      <details id="ctrlMore">
+        <summary>出題設定（種別・配置・文字・入力方式）</summary>
+        <div class="inner">
+          <div class="chips" id="typeChips"></div>
+          <div class="segs" id="segs"></div>
+        </div>
+      </details>
+    </div>
+    <div class="modebar" id="modeBar" hidden></div>
+    <div class="stage" id="stage">
+      <div class="mainCol">
+        <article class="qcard" id="qcard"></article>
+        <div id="ansBox"></div>
+      </div>
+      <aside class="tocCol" id="tocBox"></aside>
+    </div>
+    <div class="sess" id="sess"></div>
+  </section>
+
+  <!-- 復習 -->
+  <section class="view" id="v-review" hidden><div class="narrow">
+    <div class="vhead">
+      <h2>復習リスト</h2>
+      <p>近さ40点未満（大外れ）と「見送る」にした問題が自動で入ります。命中（完全一致）で外れます。</p>
+    </div>
+    <div class="vrow"><button class="btn go" data-act="startReview">復習モードで出題</button><span class="muted small" id="revCount"></span></div>
+    <div class="chips scroll" id="revSubj"></div>
+    <ol class="list" id="revList"></ol>
+  </div></section>
+
+  <!-- ランキング -->
+  <section class="view" id="v-rank" hidden><div class="narrow">
+    <div class="vhead"><h2>科目別の成績</h2></div>
+    <div class="card tbl" id="subjTable"></div>
+    <div class="vhead">
+      <h2>外れ度ランキング</h2>
+      <p>外れ度＝100−近さの平均。大きいほど条文番号が出てこない問題です。</p>
+    </div>
+    <div class="vrow"><button class="btn go" data-act="startWeak">上位20問を集中出題</button></div>
+    <div class="chips scroll" id="rankSubj"></div>
+    <ol class="list" id="rankList"></ol>
+  </div></section>
+
+  <!-- 問題追加 -->
+  <section class="view" id="v-add" hidden><div class="narrow">
+    <div class="card">
+      <h2>1問ずつ追加</h2>
+      <div class="grid2">
+        <label class="f">科目<select class="t" id="fSubj"></select></label>
+        <label class="f">法令<select class="t" id="fLaw"></select></label>
+        <label class="f">種別<select class="t" id="fType"></select></label>
+      </div>
+      <label class="f" id="fLawOtherWrap" hidden>法令名（その他）<input class="t" id="fLawOther" placeholder="例：借地借家法"></label>
+      <label class="f">問題文（用語・キーワード・事例）<textarea class="t" id="fP" rows="3" placeholder="例：賃借人の造作買取請求権"></textarea></label>
+      <div class="grid3">
+        <label class="f">条<input class="t" id="fArt" inputmode="decimal" placeholder="33 / 37の2"></label>
+        <label class="f">項<input class="t" id="fK" inputmode="numeric" placeholder="なし"></label>
+        <label class="f">号<input class="t" id="fG" inputmode="numeric" placeholder="なし"></label>
+      </div>
+      <label class="f">解説（任意）<input class="t" id="fN" placeholder="例：借地借家法33条1項"></label>
+      <div class="acts"><button class="btn go" data-act="addOne">この問題を追加</button></div>
+    </div>
+
+    <div class="card">
+      <h2>一括追加</h2>
+      <p class="muted small" style="margin:0">1行に1問。<b>科目|法令|種別|問題文|条,項,号|解説</b> の順に「|」かタブで区切ります。条は「94,2,」「37の2,1,」「94条2項」のどれでも可。Excelからの貼り付けも可。</p>
+      <div class="code">民法|民法|論点|賃貸人たる地位の移転と敷金の承継|605の2,4,|敷金返還債務も承継
+刑法|刑法|罪名|強制執行妨害目的財産損壊等罪|96の2,,|
+行政法|行政不服審査法|用語|審査請求期間（3か月）|18,1,|</div>
+      <textarea class="t" id="bulk" rows="6" placeholder="ここに貼り付け"></textarea>
+      <div class="acts"><span class="muted small" id="bulkMsg"></span><button class="btn pri" data-act="addBulk">まとめて追加</button></div>
+    </div>
+
+    <div class="card">
+      <h2>過去問・テキストから問題を作る</h2>
+      <p class="muted small" style="margin:0">下のボタンで指示文をコピーし、Claudeとのチャットに<b>指示文＋問題文（司法試験・予備試験・法科大学院入試の論文問題や自作テキスト）</b>を貼り付けて送ります。返ってきた行を、そのまま上の「一括追加」に貼り付けてください。<b>条文番号はAIの推定</b>なので、六法で確認してから追加してください。</p>
+      <label class="f">科目<select class="t" id="pSubj"></select></label>
+      <div class="acts"><button class="btn pri" data-act="copyPrompt">指示文をコピー</button></div>
+      <div id="aiArea" hidden>
+        <p class="muted small" style="margin:0 0 8px">このプレビューでは、アプリの中で直接抽出もできます。</p>
+        <div class="grid2" style="margin-bottom:10px">
+          <label class="f">最大件数<select class="t" id="aiN"><option>6</option><option selected>10</option><option>15</option></select></label>
+        </div>
+        <textarea class="t" id="aiText" rows="6" placeholder="問題文を貼り付け"></textarea>
+        <div class="acts" style="margin-top:10px"><span class="muted small" id="aiMsg"></span><button class="btn pri" data-act="aiRun" id="aiBtn">アプリ内で抽出</button></div>
+        <div id="aiRes" style="display:flex;flex-direction:column;gap:8px;margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div class="vhead"><h2>追加した問題</h2><p id="myCount"></p></div>
+    <ol class="list" id="myList"></ol>
+  </div></section>
+
+  <!-- 同期・設定 -->
+  <section class="view" id="v-data" hidden><div class="narrow">
+    <div class="card" id="syncCard">
+      <h2>☁ クラウド同期（GitHub）</h2>
+      <p class="muted small" style="margin:0">Windows・iPhone・iPadで、成績・復習リスト・追加した問題を共有します。データはご自分のGitHubの<b>非公開</b>リポジトリに保存されます。論PASSと同じデータ用リポジトリ・トークンを使えます（保存するファイルは別です）。</p>
+      <p class="err" id="artNote" hidden>このプレビュー画面ではGitHub同期は使えません。GitHub Pagesに置いた「条文スナイパー」で設定してください。</p>
+      <label class="f">データ用リポジトリ（ユーザー名/リポジトリ名）<input class="t" id="sRepo" placeholder="yourname/ronpass-data" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <label class="f">アクセストークン<input class="t" id="sTok" type="password" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <label class="chk"><input type="checkbox" id="sAuto">自動で同期する（起動時・解答のあと・アプリを閉じるとき）</label>
+      <div class="acts" style="justify-content:flex-start"><button class="btn go" data-act="syncSave">保存して同期</button><button class="btn" data-act="syncNow">今すぐ同期</button><button class="btn danger" data-act="syncOff" id="syncOffBtn">同期をやめる</button></div>
+      <p class="muted small" id="syncInfo" style="margin:0"></p>
+      <details class="help"><summary>はじめての設定のしかた</summary><ol>
+        <li>GitHubで「New repository」→ 名前を <code>ronpass-data</code> などにし、<b>Private</b> を選び、「Add a README file」にチェックして作成（論PASSで作成済みなら、それを使えます）。<br>※アプリを置く公開リポジトリとは<b>別</b>にしてください。</li>
+        <li>右上のアイコン →「Settings」→ 左下「Developer settings」→「Personal access tokens」→「Fine-grained tokens」→「Generate new token」。</li>
+        <li>「Repository access」で <b>Only select repositories</b> → データ用リポジトリを選ぶ。「Permissions」の <b>Contents</b> を <b>Read and write</b> にして作成。</li>
+        <li>表示された <code>github_pat_…</code> をコピー（一度しか表示されません）。</li>
+        <li>各端末のこの画面で、リポジトリ名とトークンを入れて「保存して同期」。</li>
+      </ol>トークンはこの端末の中にだけ保存され、バックアップにも含まれません。期限が切れたら作り直して入れ直してください。</details>
+    </div>
+    <div class="card">
+      <h2>表示</h2>
+      <label class="chk"><input type="checkbox" id="setAbbr">略語一覧で短く表示する（例：債権者→㋘、94条2項→94②）</label>
+      <label class="chk"><input type="checkbox" id="setAnim">命中・かすりの演出を出す</label>
+      <label class="chk"><input type="checkbox" id="setPencil">Apple Pencilでダイアルを回すとき、指のスクロールと区別する</label>
+    </div>
+    <div class="card">
+      <h2>バックアップを書き出す</h2>
+      <p class="muted small" style="margin:0">追加した問題と成績をテキストで書き出します（トークンは含みません）。</p>
+      <textarea class="t" id="exportBox" rows="4" readonly></textarea>
+      <div class="acts"><button class="btn pri" data-act="copyExport">コピー</button></div>
+    </div>
+    <div class="card">
+      <h2>バックアップを読み込む</h2>
+      <textarea class="t" id="importBox" rows="4" placeholder="書き出したテキストを貼り付け"></textarea>
+      <div class="acts"><button class="btn pri" data-act="doImport">読み込む</button></div>
+    </div>
+    <div class="card">
+      <h2>成績のリセット</h2>
+      <p class="muted small" style="margin:0">解答記録・復習リスト・ランキングを消去します。追加した問題は残ります。</p>
+      <div class="acts"><button class="btn danger" data-act="resetStats" data-confirm="もう一度押すと消去します">成績をリセット</button></div>
+    </div>
+    <p class="muted small" id="verInfo"></p>
+  </div></section>
+</main>
+<div id="fx" hidden></div>
+<div id="toast" hidden></div>
+
+<script>
+"use strict";
+const VERSION='2.0';
+/* ===================== 問題バンク =====================
+   形式: 種別|問題文|条,項,号|解説|法令(省略時は科目の既定)|別解(;区切り) */
+const SUBJ=['憲法','行政法','民法','商法','民訴','刑法','刑訴'];
+const DEF_LAW={憲法:'憲法',行政法:'行政事件訴訟法',民法:'民法',商法:'会社法',民訴:'民事訴訟法',刑法:'刑法',刑訴:'刑事訴訟法'};
+const LAWS_BY_SUBJ={憲法:['憲法'],行政法:['行政事件訴訟法','行政手続法','国家賠償法','行政不服審査法','地方自治法'],民法:['民法','借地借家法'],商法:['会社法','商法'],民訴:['民事訴訟法','民事執行法','民事保全法'],刑法:['刑法'],刑訴:['刑事訴訟法','警察官職務執行法']};
+const TYPES=['用語','論点','罪名','手続','KW','事例'];
+const TL={用語:'用語',論点:'論点',罪名:'罪名',手続:'手続',KW:'キーワード',事例:'事例'};
+
+const BANK_SRC={
+憲法:`用語|幸福追求権（新しい人権の包括的根拠）|13||
+論点|プライバシー権・肖像権の憲法上の根拠|13|京都府学連事件：みだりに容ぼうを撮影されない自由|
+用語|法の下の平等|14,1||
+論点|尊属殺重罰規定の合憲性|14,1|尊属殺重罰規定違憲判決（昭48）|
+論点|議員定数不均衡（一票の較差）|14,1|投票価値の平等。15条・44条ただし書も関連||44;15,1
+論点|非嫡出子の法定相続分の区別|14,1|平成25年大法廷決定で違憲|
+用語|公務員の選定罷免権|15,1||
+用語|思想及び良心の自由|19||
+用語|信教の自由|20,1||
+論点|政教分離（国及びその機関の宗教的活動の禁止）|20,3|目的効果基準（津地鎮祭事件）||89
+論点|宗教上の組織への公金支出の禁止|89|愛媛玉串料事件では20条3項とともに問題に||20,3
+用語|表現の自由|21,1||
+用語|集会・結社の自由|21,1||
+用語|検閲の禁止|21,2|税関検査事件：検閲の定義|
+用語|通信の秘密|21,2||
+用語|職業選択の自由（営業の自由）|22,1||
+用語|居住・移転の自由|22,1||
+用語|外国移住・国籍離脱の自由|22,2||
+用語|学問の自由（大学の自治）|23|東大ポポロ事件|
+KW|婚姻は両性の合意のみに基いて成立|24,1||
+論点|家族に関する法律と個人の尊厳・両性の本質的平等|24,2|再婚禁止期間違憲判決・夫婦同氏規定合憲判決|
+用語|生存権（健康で文化的な最低限度の生活）|25,1|朝日訴訟・堀木訴訟|
+用語|教育を受ける権利|26,1||
+用語|義務教育の無償|26,2||
+用語|勤労の権利|27,1||
+用語|労働基本権（団結権・団体交渉権・団体行動権）|28||
+用語|財産権の保障|29,1||
+KW|財産権の内容は公共の福祉に適合するように法律で定める|29,2|森林法共有林事件|
+論点|損失補償（正当な補償）|29,3|本条に基づく直接請求の可否|
+論点|適正手続の保障（行政手続への適用）|31|成田新法事件|
+用語|裁判を受ける権利|32||
+論点|逮捕の令状主義|33||
+論点|住居の不可侵・捜索押収の令状主義|35,1|GPS捜査大法廷判決|
+用語|拷問及び残虐な刑罰の禁止|36||
+用語|公平な裁判所の迅速な公開裁判を受ける権利|37,1|高田事件|
+用語|刑事被告人の証人審問権・喚問権|37,2||
+用語|刑事被告人の弁護人依頼権|37,3||
+用語|自己負罪拒否特権（黙秘権）|38,1||
+論点|強制・拷問・脅迫による自白の証拠能力|38,2||
+論点|自白の補強法則（憲法）|38,3||
+用語|遡及処罰の禁止・一事不再理|39||
+用語|国会は国権の最高機関・唯一の立法機関|41||
+論点|議員及び選挙人の資格の平等|44||
+用語|国会議員の不逮捕特権|50||
+用語|国会議員の免責特権|51||
+用語|国政調査権|62||
+用語|行政権は内閣に属する|65||
+論点|内閣の国会に対する連帯責任|66,3||
+用語|衆議院の内閣不信任決議|69||
+論点|政令の制定（委任立法の限界）|73,,6||
+論点|衆議院の解散（7条解散）|7,,3|苫米地事件：統治行為論||69
+用語|司法権の帰属|76,1||
+論点|司法権の範囲（法律上の争訟・部分社会論）|76,1|裁判所法3条1項も参照|
+用語|特別裁判所の設置禁止|76,2||
+用語|裁判官の職権の独立|76,3||
+用語|裁判官の身分保障|78||
+用語|最高裁判所裁判官の国民審査|79,2||
+用語|違憲審査権|81|警察予備隊違憲訴訟：付随的審査制|
+論点|裁判の公開（法廷でのメモ採取）|82,1|レペタ事件では21条1項も関連|
+用語|財政民主主義|83||
+用語|租税法律主義|84|旭川市国民健康保険条例事件|
+用語|地方自治の本旨|92||
+用語|条例制定権|94|徳島市公安条例事件|
+用語|地方特別法の住民投票|95||
+用語|憲法改正の手続|96,1||
+用語|憲法の最高法規性|98,1||
+用語|憲法尊重擁護義務|99||
+用語|戦争の放棄|9,1||
+用語|戦力の不保持・交戦権の否認|9,2||
+事例|市が市体育館の起工式を神式の地鎮祭で行い、その費用を公金から支出した。目的効果基準で判断される条文は？|20,3|津地鎮祭事件||89
+事例|薬局開設の距離制限が営業の自由を侵害するとして争われた。|22,1|薬事法距離制限事件：違憲|
+事例|外国人Xは在留中の政治活動を理由に在留期間の更新を不許可とされた。政治活動の自由の根拠条文は？|21,1|マクリーン事件|
+事例|税関で輸入書籍が「風俗を害すべき書籍」に当たるとして輸入を禁止された。行政権による事前規制として問題となる条文は？|21,2|税関検査事件：検閲には当たらない|
+事例|生活保護の老齢加算の廃止が、健康で文化的な最低限度の生活を下回るとして争われた。|25,1||
+事例|地方公共団体が、公道でのデモ行進に公安委員会の許可を要する条例を定めた。制約される人権の条文は？|21,1|集団行動の自由|`,
+行政法:`用語|処分の取消しの訴え|3,2||行政事件訴訟法
+用語|裁決の取消しの訴え|3,3||行政事件訴訟法
+用語|無効等確認の訴え（定義）|3,4||行政事件訴訟法
+用語|不作為の違法確認の訴え（定義）|3,5||行政事件訴訟法
+用語|義務付けの訴え（定義）|3,6||行政事件訴訟法
+用語|差止めの訴え（定義）|3,7||行政事件訴訟法
+論点|公法上の当事者訴訟（確認の訴え）|4|在外国民選挙権訴訟|行政事件訴訟法
+論点|取消訴訟の原告適格（法律上の利益を有する者）|9,1|法律上保護された利益説|行政事件訴訟法
+論点|原告適格の考慮事項（法令の趣旨・目的、利益の内容・性質）|9,2|小田急高架化事件|行政事件訴訟法
+論点|自己の法律上の利益に関係のない違法の主張制限|10,1||行政事件訴訟法
+用語|原処分主義|10,2||行政事件訴訟法
+用語|取消訴訟の被告適格|11,1||行政事件訴訟法
+論点|取消訴訟の出訴期間（知った日から6か月）|14,1||行政事件訴訟法
+用語|取消訴訟の出訴期間（処分の日から1年）|14,2||行政事件訴訟法
+用語|執行不停止の原則|25,1||行政事件訴訟法
+論点|執行停止の要件（重大な損害を避けるため緊急の必要）|25,2||行政事件訴訟法
+用語|執行停止の消極要件|25,4|公共の福祉に重大な影響・本案について理由がないとみえるとき|行政事件訴訟法
+論点|裁量処分の取消し（裁量権の逸脱・濫用）|30||行政事件訴訟法
+用語|事情判決|31,1||行政事件訴訟法
+用語|取消判決の第三者効|32,1||行政事件訴訟法
+用語|取消判決の拘束力|33,1||行政事件訴訟法
+論点|無効等確認の訴えの原告適格（補充性）|36||行政事件訴訟法
+用語|不作為の違法確認の訴えの原告適格|37||行政事件訴訟法
+論点|非申請型義務付け訴訟の要件（重大な損害・補充性）|37の2,1||行政事件訴訟法
+論点|申請型義務付け訴訟の要件|37の3,1||行政事件訴訟法
+論点|差止め訴訟の要件（重大な損害を生ずるおそれ）|37の4,1|君が代予防訴訟|行政事件訴訟法
+用語|仮の義務付け|37の5,1||行政事件訴訟法
+用語|仮の差止め|37の5,2||行政事件訴訟法
+用語|行政庁の処分についての仮処分の排除|44||行政事件訴訟法
+用語|自由選択主義（審査請求と取消訴訟）|8,1||行政事件訴訟法
+論点|処分の定義|2,,2|行政手続法上の定義。処分性の判例基準も確認|行政手続法
+用語|審査基準の設定|5,1|公にする義務は5条3項|行政手続法|5,3
+用語|標準処理期間|6||行政手続法
+用語|申請に対する審査・応答義務|7||行政手続法
+論点|申請拒否処分の理由の提示|8,1||行政手続法
+用語|処分基準|12,1||行政手続法
+論点|不利益処分の意見陳述手続（聴聞・弁明の機会）|13,1||行政手続法
+論点|不利益処分の理由の提示|14,1|一級建築士免許取消事件|行政手続法
+用語|行政指導の一般原則（任意の協力）|32,1||行政手続法
+論点|申請に関連する行政指導|33||行政手続法
+用語|行政指導の中止等の求め|36の2,1||行政手続法
+用語|処分等の求め|36の3,1||行政手続法
+用語|意見公募手続（パブリックコメント）|39,1||行政手続法
+論点|公権力の行使に基づく国家賠償責任|1,1||国家賠償法
+用語|公務員に対する求償（故意・重過失）|1,2||国家賠償法
+論点|公の営造物の設置・管理の瑕疵|2,1|高知落石事件・大東水害訴訟|国家賠償法
+用語|費用負担者の賠償責任|3,1||国家賠償法
+論点|国家賠償における民法の適用（失火責任法）|4||国家賠償法
+用語|住民監査請求|242,1||地方自治法
+用語|住民訴訟|242の2,1||地方自治法
+事例|Xは隣地のマンションに対する建築確認の取消しを求めたい。Xに原告適格があるかの判断基準となる条文は？|9,1|考慮事項は9条2項|行政事件訴訟法|9,2
+事例|営業停止処分を受けたXが、取消訴訟を提起したうえで処分の効力を止めたい。|25,2||行政事件訴訟法
+事例|Xが許可申請をしたが、行政庁が長期間応答しない。許可処分をさせるための訴訟の要件は？|37の3,1|不作為型は37条の3第1項1号|行政事件訴訟法
+事例|公立学校の老朽化した窓枠が落下し、生徒が負傷した。|2,1||国家賠償法
+事例|警察官が職務中に違法な拳銃使用で通行人を負傷させた。|1,1||国家賠償法
+事例|免許取消処分にあたり、相手方に事前に意見を述べる機会を与えなかった。|13,1||行政手続法
+事例|市長の違法な公金支出について、住民が市長個人への損害賠償請求を市に求める訴訟を起こしたい。|242の2,1|住民監査請求の前置が必要|地方自治法`,
+民法:`用語|信義誠実の原則|1,2||
+用語|権利濫用の禁止|1,3|宇奈月温泉事件|
+用語|意思能力を欠く法律行為の無効|3の2||
+用語|未成年者の法律行為（法定代理人の同意）|5,1||
+用語|未成年者の同意なき法律行為の取消し|5,2||
+用語|制限行為能力者の相手方の催告権|20,1||
+用語|制限行為能力者の詐術|21||
+用語|公序良俗違反|90||
+用語|心裡留保|93,1||
+用語|通謀虚偽表示|94,1||
+論点|虚偽表示の無効は善意の第三者に対抗できない|94,2||
+論点|94条2項類推適用（虚偽の外観への帰責）|94,2|110条との併用類推も|
+用語|錯誤による取消し|95,1||
+論点|動機の錯誤（基礎事情の錯誤）|95,1,2|表示の要件は95条2項|
+論点|動機の錯誤の表示要件|95,2||
+用語|錯誤者の重過失による取消しの制限|95,3||
+用語|錯誤取消しと善意無過失の第三者|95,4||
+用語|詐欺・強迫による意思表示の取消し|96,1||
+用語|第三者による詐欺|96,2||
+用語|詐欺取消しと善意無過失の第三者|96,3||
+用語|代理行為の要件（顕名）|99,1||
+論点|代理権の濫用|107||
+用語|自己契約・双方代理の禁止|108,1||
+用語|代理人と本人の利益相反行為|108,2||
+論点|代理権授与の表示による表見代理|109,1||
+論点|権限外の行為の表見代理（正当な理由）|110||
+用語|代理権消滅後の表見代理|112,1||
+用語|無権代理行為の本人による追認|113,1||
+用語|追認の遡及効|116||
+論点|無権代理人の責任（履行又は損害賠償）|117,1||
+論点|無権代理と相続|113,1|本人相続型・無権代理人相続型の判例理論||117,1
+用語|取消しの効果（初めから無効）|121||
+用語|無効な行為に基づく給付の原状回復義務|121の2,1||
+用語|取消権の期間の制限（追認可能時から5年）|126||
+用語|条件成就の妨害|130,1||
+論点|時効の援用（援用権者の範囲）|145||
+用語|裁判上の請求による時効の完成猶予|147,1|確定判決等による更新は147条2項||147,2
+用語|承認による時効の更新|152,1||
+用語|所有権の取得時効（20年）|162,1||
+用語|短期取得時効（善意無過失・10年）|162,2||
+用語|債権の消滅時効（知った時から5年）|166,1,1||
+用語|債権の消滅時効（行使できる時から10年）|166,1,2||
+用語|物権法定主義|175||
+用語|物権変動の意思主義|176||
+論点|不動産物権変動の対抗要件（登記）|177||
+論点|背信的悪意者排除論|177||
+論点|取消し後の第三者|177|判例：対抗関係として処理|
+論点|時効完成後の第三者|177||
+用語|動産物権譲渡の対抗要件（引渡し）|178||
+用語|占有の態様等に関する推定|186,1||
+用語|占有の承継（前主の占有の併合）|187,1||
+論点|即時取得|192|占有改定では足りない（判例）|
+用語|盗品・遺失物の回復請求（2年）|193||
+用語|公道に至るための他の土地の通行権|210,1||
+用語|不動産の付合|242||
+用語|共有物の変更|251,1||
+用語|共有物の管理|252,1||
+用語|共有物の分割請求|256,1||
+用語|裁判による共有物の分割|258,1||
+用語|留置権|295,1||
+用語|先取特権の物上代位|304,1||
+用語|抵当権の内容|369,1||
+論点|抵当権の効力の及ぶ範囲（付加一体物・従物）|370||
+論点|抵当権に基づく物上代位（賃料債権・差押え）|372|372条で304条を準用||304,1
+論点|法定地上権|388||
+用語|根抵当権|398の2,1||
+用語|特定物の引渡しにおける善管注意義務|400||
+用語|履行期と履行遅滞|412||
+用語|履行不能|412の2,1||
+用語|受領遅滞|413,1||
+用語|履行の強制|414,1||
+論点|債務不履行による損害賠償（帰責事由）|415,1||
+用語|填補賠償|415,2||
+論点|損害賠償の範囲（通常損害）|416,1||
+論点|損害賠償の範囲（特別損害）|416,2||
+用語|過失相殺（債務不履行）|418||
+用語|金銭債務の特則（不可抗力をもって抗弁とできない）|419,3||
+用語|賠償額の予定|420,1||
+用語|代償請求権|422の2||
+論点|債権者代位権|423,1||
+論点|登記請求権を保全するための債権者代位権|423の7||
+論点|詐害行為取消請求|424,1||
+用語|連帯債務|436||
+用語|保証人の責任|446,1||
+用語|保証契約の要式性（書面）|446,2||
+用語|催告の抗弁|452||
+用語|検索の抗弁|453||
+用語|連帯保証人には催告・検索の抗弁がない|454||
+用語|個人根保証契約の極度額|465の2,2||
+用語|債権の譲渡性|466,1||
+論点|譲渡制限の意思表示（譲渡制限特約）|466,2||
+論点|債権譲渡の債務者対抗要件（通知・承諾）|467,1||
+論点|債権譲渡の第三者対抗要件（確定日付）|467,2|二重譲渡は通知の到達時の先後（判例）|
+用語|債権譲渡における債務者の抗弁|468,1||
+用語|第三者の弁済|474,1||
+論点|受領権者としての外観を有する者に対する弁済|478||
+用語|代物弁済|482||
+用語|弁済による代位|499||
+用語|相殺の要件（相殺適状）|505,1||
+用語|不法行為等により生じた債権を受働債権とする相殺の禁止|509||
+論点|差押えと相殺|511,1|無制限説を明文化|
+用語|契約の成立（申込みと承諾）|522,1||
+論点|同時履行の抗弁権|533||
+論点|危険負担（反対給付の履行拒絶）|536,1||
+用語|債権者の責めに帰すべき事由による履行不能と反対給付|536,2||
+用語|第三者のためにする契約|537,1||
+論点|催告による解除|541|軽微な不履行は解除不可（ただし書）|
+用語|催告によらない解除|542,1||
+論点|解除の効果（原状回復義務）|545,1||
+論点|解除前の第三者|545,1|ただし書。第三者は登記が必要（判例）|
+用語|定型約款の合意|548の2,1||
+用語|書面によらない贈与の解除|550||
+用語|解約手付|557,1||
+用語|他人の権利の売買|561||
+論点|契約不適合：買主の追完請求権|562,1||
+用語|契約不適合：代金減額請求権|563,1||
+用語|契約不適合：損害賠償請求・解除|564||
+用語|種類・品質の契約不適合の期間制限（1年以内の通知）|566||
+用語|目的物の滅失等についての危険の移転|567,1||
+用語|書面でする消費貸借|587の2,1||
+論点|不動産賃貸借の対抗力|605|借地借家法10条・31条も確認|
+用語|不動産の賃貸人たる地位の移転|605の2,1||
+用語|賃貸人の修繕義務|606,1||
+用語|賃借人の必要費償還請求|608,1||
+用語|賃借人の有益費償還請求|608,2||
+用語|賃借権の譲渡・転貸に必要な賃貸人の承諾|612,1||
+論点|無断譲渡・転貸による解除（背信的行為と認めるに足りない特段の事情）|612,2||
+用語|転借人の賃貸人に対する直接義務|613,1||
+用語|賃借人の原状回復義務|621||
+用語|敷金|622の2,1||
+用語|請負|632||
+用語|注文者が受ける利益の割合に応じた報酬|634||
+用語|委任|643||
+用語|受任者の善管注意義務|644||
+用語|委任の任意解除|651,1||
+用語|事務管理|697,1||
+用語|不当利得の返還義務|703||
+用語|悪意の受益者の返還義務|704||
+用語|債務の不存在を知ってした弁済（非債弁済）|705||
+論点|不法原因給付|708||
+論点|一般不法行為の要件|709||
+用語|財産以外の損害の賠償（慰謝料）|710||
+用語|近親者に対する損害の賠償|711||
+用語|未成年者の責任能力|712||
+論点|責任無能力者の監督義務者等の責任|714,1||
+論点|使用者責任|715,1|外形標準説|
+用語|使用者から被用者への求償|715,3||
+論点|土地工作物責任|717,1|所有者は無過失責任|
+論点|共同不法行為|719,1||
+論点|被害者の過失（過失相殺・被害者側の過失）|722,2||
+用語|名誉毀損における原状回復処分（謝罪広告）|723||
+用語|不法行為による損害賠償請求権の消滅時効|724||
+用語|人の生命・身体を害する不法行為の消滅時効（5年）|724の2||
+用語|日常家事債務の連帯責任|761|110条の趣旨の類推（判例）|
+用語|財産分与|768,1||
+用語|裁判上の離婚原因|770,1||
+用語|嫡出の推定|772,1||
+論点|親権者と子の利益相反行為（特別代理人）|826,1||
+用語|相続人の欠格事由|891||
+用語|相続の一般的効力（包括承継）|896||
+論点|共同相続における権利承継の対抗要件|899の2,1||
+用語|法定相続分|900||
+用語|特別受益者の相続分|903,1||
+用語|寄与分|904の2,1||
+用語|相続の熟慮期間（3か月）|915,1||
+用語|法定単純承認|921||
+用語|限定承認|922||
+用語|相続放棄の効力|939||
+用語|自筆証書遺言の方式|968,1||
+用語|配偶者居住権|1028,1||
+用語|遺留分侵害額の請求|1046,1||
+事例|AはBと通謀して甲土地をBに売却したように装い登記を移した。Bは事情を知らないCに甲を転売した。AはCに無効を主張できるか。|94,2||
+事例|Aは甲土地をBに売却したが、登記未了の間に甲をCにも売却し、C名義の登記を備えた。BはCに所有権を主張できるか。|177||
+事例|未成年者Aが親の同意なくバイクを購入した。親は契約をなかったことにしたい。|5,2||
+事例|BはAの代理人と称してA所有の土地をCに売却したが、代理権はなかった。Aは追認を拒絶した。CはBに何を請求できるか。|117,1||
+事例|Aは自己所有の時計をBに預けていたが、Bはこれを自分の物としてCに売却し、善意無過失のCが現実の引渡しを受けた。|192||
+事例|AはBに100万円の債権を有するが、Bは無資力で、BのCに対する貸金債権を行使しない。|423,1||
+事例|無資力の債務者Bが唯一の財産である土地を親族Cに贈与した。債権者Aは贈与の効力を否定したい。|424,1||
+事例|AはBから建物を賃借し、Bの承諾なくCに転貸した。BはAとの契約を解除したい。|612,2||
+事例|Aは中古車をBに売ったが、引渡し後にエンジンの欠陥が判明した。Bは修理を求めたい。|562,1||
+事例|A社の従業員Bが配達中に過失で歩行者Cをはねて負傷させた。CはA社に賠償を求めたい。|715,1||
+事例|A所有のブロック塀が倒れ通行人Bが負傷した。占有者Cは損害の発生防止に必要な注意をしていた。|717,1|占有者が免責されると所有者が無過失責任（ただし書）|
+事例|Aは所有する土地と建物のうち土地にのみ抵当権を設定し、その後抵当権が実行されてCが土地を買い受けた。建物の利用権は？|388||
+事例|銀行は、預金通帳と届出印を持参した無権限者Cに預金を払い戻した。払戻しは有効か。|478||
+事例|Bは売買代金を請求されたが、売主Aはまだ商品を引き渡していない。Bは支払を拒みたい。|533||
+事例|Aは錯誤に陥ってBと契約したが、その錯誤は契約の基礎とした事情についてのものだった。|95,1,2|表示の要件は95条2項|`,
+商法:`用語|株主有限責任|104||
+用語|株主の権利（配当・残余財産分配・議決権）|105,1||
+論点|株主平等原則|109,1|ブルドックソース事件|
+論点|株主の権利の行使に関する利益供与の禁止|120,1||
+用語|株式譲渡自由の原則|127||
+用語|株券発行会社における株式の譲渡（株券の交付）|128,1||
+用語|株式譲渡の対抗要件（株主名簿の名義書換）|130,1||
+用語|譲渡制限株式の譲渡承認請求|136||
+用語|公開会社における募集事項の決定（取締役会）|201,1||
+論点|法令・定款違反の募集株式発行の差止め|210,,1||
+論点|著しく不公正な方法による募集株式の発行（主要目的ルール）|210,,2||
+論点|新株発行無効の訴え|828,1,2||
+用語|自己株式の処分の無効の訴え|828,1,3||
+用語|設立無効の訴え|828,1,1||
+用語|吸収合併の無効の訴え|828,1,7||
+論点|新株予約権の発行の差止め|247|ブルドックソース事件・ニッポン放送事件|
+用語|取締役会設置会社における株主総会の権限|295,2||
+用語|少数株主による株主総会の招集請求|297,1||
+用語|株主提案権（議題提案権）|303,1||
+用語|株主総会の普通決議|309,1||
+用語|株主総会の特別決議|309,2||
+用語|議決権の代理行使|310,1|代理人資格を株主に限る定款（判例）|
+用語|取締役等の説明義務|314||
+用語|会社と役員等の関係（委任）|330||
+用語|取締役の解任（株主総会決議）|339,1||
+用語|代表取締役の包括的代表権|349,4||
+論点|代表権に加えた制限と善意の第三者|349,5||
+論点|表見代表取締役|354||
+用語|取締役の忠実義務|355||
+論点|競業取引の制限|356,1,1||
+論点|利益相反取引（直接取引）|356,1,2||
+論点|利益相反取引（間接取引）|356,1,3||
+用語|取締役会設置会社における競業・利益相反取引の承認|365,1||
+用語|株主による取締役の違法行為差止請求|360,1||
+論点|取締役の報酬等の決定|361,1||
+論点|重要な財産の処分・譲受け（取締役会決議事項）|362,4,1|決議を欠く取引の効力：相対的無効|
+用語|多額の借財（取締役会決議事項）|362,4,2||
+用語|内部統制システムの整備|362,4,6||
+用語|取締役会による職務執行の監督|362,2,2||
+用語|取締役会の決議要件|369,1||
+用語|取締役会決議の特別利害関係取締役|369,2||
+論点|役員等の任務懈怠責任（会社に対する責任）|423,1||
+論点|経営判断原則|423,1|アパマンショップ事件|
+用語|利益相反取引による任務懈怠の推定|423,3||
+用語|総株主の同意による責任の免除|424||
+論点|役員等の第三者に対する損害賠償責任|429,1|法定責任説：悪意・重過失は任務懈怠について|
+用語|分配可能額を超える剰余金の配当の禁止|461,1||
+用語|違法配当に関する責任|462,1||
+論点|事業の重要な一部の譲渡（株主総会特別決議）|467,1,2||
+用語|反対株主の株式買取請求（事業譲渡等）|469,1||
+論点|株主総会決議取消しの訴え（招集手続・決議方法の法令定款違反）|831,1,1||
+用語|特別利害関係人の議決権行使による著しく不当な決議|831,1,3||
+論点|決議取消しの訴えの裁量棄却|831,2||
+用語|株主総会決議不存在確認の訴え|830,1||
+用語|株主総会決議無効確認の訴え|830,2||
+論点|株主代表訴訟（責任追及等の訴え）|847,1|提訴請求。訴えの提起は847条3項||847,3
+用語|多重代表訴訟（特定責任追及の訴え）|847の3,1||
+用語|公開会社の定義|2,,5||
+用語|大会社の定義|2,,6||
+用語|会社法上の登記の効力|908,1||
+論点|事業譲受会社による商号続用の責任|22,1||
+論点|名板貸人の責任|14||商法
+用語|営業譲受人の商号続用責任（商法）|17,1||商法
+論点|商行為の代理（非顕名主義）|504||商法
+用語|商人間売買における買主の検査義務|526,1||商法
+用語|商人間売買における契約不適合の通知義務|526,2||商法
+用語|商人間の留置権|521||商法
+事例|A社の代表取締役Bが、取締役会決議を経ずにA社の主要工場を売却した。|362,4,1||
+事例|A社取締役Bは、自らが代表するC社にA社の製品を著しく安価で売却した。取締役会の承認はない。|356,1,2|取締役会設置会社の承認機関は365条1項||365,1
+事例|株主総会の招集通知が一部の株主に送られていなかった。株主Xは決議の効力を争いたい。|831,1,1||
+事例|経営権争いの最中、現経営陣が友好的な第三者に大量の新株を割り当てようとしている。株主Xは止めたい。|210,,2||
+事例|取締役の放漫経営で会社が倒産し、取引先Xが代金を回収できなくなった。Xは取締役個人に請求したい。|429,1||
+事例|会社が取締役Yの任務懈怠責任を追及しないため、株主Xが会社に代わって訴えたい。|847,1||847,3`,
+民訴:`用語|信義誠実の原則（民訴）|2||
+用語|法人でない社団等の当事者能力|29||
+用語|選定当事者|30,1||
+用語|訴訟能力|31||
+用語|管轄の合意|11,1||
+論点|重複訴訟の禁止|142|相殺の抗弁との関係（判例）|
+用語|訴えの変更|143,1||
+用語|反訴|146,1||
+論点|処分権主義（申立事項と判決事項）|246|一部認容判決の可否|
+論点|裁判上の自白（証明を要しない事実）|179|弁論主義の第2テーゼ|
+用語|自由心証主義|247||
+論点|損害額の認定（相当な損害額）|248||
+用語|時機に後れた攻撃防御方法の却下|157,1||
+論点|釈明権|149,1||
+論点|私文書の成立の推定（二段の推定）|228,4||
+用語|文書提出義務|220||
+用語|当事者照会|163||
+論点|既判力の客観的範囲（主文に包含するもの）|114,1||
+論点|相殺の抗弁と既判力|114,2||
+論点|既判力の主観的範囲|115,1||
+論点|口頭弁論終結後の承継人|115,1,3||
+用語|定期金賠償判決の変更を求める訴え|117,1||
+用語|通常共同訴訟の要件|38||
+用語|共同訴訟人独立の原則|39||
+論点|必要的共同訴訟（合一確定）|40,1||
+論点|補助参加（補助参加の利益）|42||
+論点|補助参加人に対する判決の効力（参加的効力）|46||
+論点|独立当事者参加|47,1||
+用語|権利承継人の訴訟参加|49,1||
+用語|義務承継人の訴訟引受け|50,1||
+用語|共同訴訟参加|52,1||
+用語|訴訟告知|53,1||
+用語|訴えの取下げ|261,1||
+論点|本案の終局判決後の取下げと再訴禁止|262,2||
+用語|請求の放棄・認諾|266,1||
+用語|附帯控訴|293,1||
+論点|不利益変更禁止の原則（控訴審）|304||
+用語|再審事由|338,1||
+事例|Xは貸金返還請求訴訟で敗訴が確定した後、同じ貸金について再び訴えを提起した。|114,1||
+事例|XのYに対する建物明渡請求訴訟の係属中に、Yが建物の占有をZに移した。XはZに訴訟を引き受けさせたい。|50,1||
+事例|XはYに100万円の支払を求めたが、裁判所は150万円の支払を命じる判決をした。|246||
+事例|被告Yが第1回口頭弁論期日に、原告主張の売買契約締結の事実を認めた。この事実に証拠調べは必要か。|179||
+事例|保証人Zは、債権者Xの主債務者Yに対する訴訟でYを勝たせるため参加したい。|42||
+事例|控訴審の最終盤で、第一審から提出できた証拠を、訴訟を遅らせる意図で提出した。|157,1||
+事例|XはYに対する債権を自働債権とする相殺の抗弁を提出したうえ、同じ債権について別訴を提起した。|142|判例は142条の趣旨を及ぼす|`,
+刑法:`用語|正当行為（法令行為・正当業務行為）|35||
+論点|正当防衛|36,1||
+論点|過剰防衛|36,2||
+論点|緊急避難|37,1||
+論点|故意（罪を犯す意思）|38,1||
+論点|抽象的事実の錯誤|38,2|法定的符合説|
+用語|法律の錯誤（違法性の意識）|38,3||
+用語|心神喪失|39,1||
+用語|心神耗弱|39,2||
+論点|原因において自由な行為|39,1|||39,2
+用語|刑事未成年（14歳未満）|41||
+用語|自首|42,1||
+論点|未遂犯（実行の着手）|43|クロロホルム事件|
+論点|中止犯（中止未遂）|43|43条ただし書|
+用語|併合罪|45||
+論点|観念的競合|54,1||
+論点|牽連犯|54,1||
+論点|共同正犯|60||
+論点|共謀共同正犯|60|練馬事件|
+用語|教唆犯|61,1||
+用語|幇助犯（従犯）|62,1||
+論点|共犯と身分（真正身分犯）|65,1||
+論点|共犯と身分（不真正身分犯）|65,2||
+罪名|公務執行妨害罪|95,1||
+罪名|職務強要罪|95,2||
+罪名|犯人蔵匿・隠避罪|103||
+罪名|証拠隠滅罪|104||
+罪名|現住建造物等放火罪|108||
+罪名|非現住建造物等放火罪|109,1||
+罪名|建造物等以外放火罪|110,1||
+罪名|住居侵入罪|130||
+罪名|有印公文書偽造罪|155,1||
+罪名|虚偽公文書作成罪|156||
+罪名|公正証書原本不実記載罪|157,1||
+罪名|有印私文書偽造罪|159,1||
+罪名|偽造私文書行使罪|161,1||
+罪名|偽証罪|169||
+罪名|虚偽告訴罪|172||
+罪名|公務員職権濫用罪|193||
+罪名|単純収賄罪|197,1|受託収賄は同項後段|
+罪名|贈賄罪|198||
+罪名|殺人罪|199||
+罪名|同意殺人罪（嘱託・承諾殺人）|202||
+罪名|傷害罪|204||
+罪名|傷害致死罪|205||
+論点|同時傷害の特例|207||
+罪名|暴行罪|208||
+罪名|過失致死罪|210||
+罪名|業務上過失致死傷罪|211||
+罪名|保護責任者遺棄罪|218||
+罪名|逮捕・監禁罪|220||
+罪名|脅迫罪|222,1||
+罪名|強要罪|223,1||
+罪名|名誉毀損罪|230,1||
+論点|公共の利害に関する場合の特例（真実性の証明）|230の2,1||
+罪名|侮辱罪|231||
+罪名|信用毀損・偽計業務妨害罪|233||
+罪名|威力業務妨害罪|234||
+罪名|窃盗罪|235||
+罪名|不動産侵奪罪|235の2||
+罪名|強盗罪|236,1||
+罪名|強盗利得罪（2項強盗）|236,2||
+罪名|事後強盗罪|238||
+罪名|昏酔強盗罪|239||
+罪名|強盗致死傷罪|240||
+論点|自己の財物に関する特例（他人の占有）|242||
+論点|親族間の犯罪に関する特例（親族相盗例）|244,1||
+罪名|詐欺罪|246,1||
+罪名|詐欺利得罪（2項詐欺）|246,2||
+罪名|電子計算機使用詐欺罪|246の2||
+罪名|背任罪|247||
+罪名|恐喝罪|249,1||
+罪名|横領罪（委託物横領）|252,1||
+罪名|業務上横領罪|253||
+罪名|遺失物等横領罪（占有離脱物横領）|254||
+罪名|盗品等無償譲受け罪|256,1||
+罪名|盗品等運搬・保管・有償譲受け・有償処分あっせん罪|256,2||
+罪名|公用文書等毀棄罪|258||
+罪名|私用文書等毀棄罪|259||
+罪名|建造物損壊罪|260||
+罪名|器物損壊罪|261||
+事例|Aは店で商品を盗み、追いかけてきた店員から逃れるため店員を突き飛ばして負傷させた。|240|事後強盗（238条）が強盗致傷に||238
+事例|Aは他人のキャッシュカードを無断で使ってATMから現金を引き出した。|235|ATM管理者の占有を侵害|
+事例|Aは不正に知った他人の暗証番号を使い、ATMで他人の口座から自分の口座へ振込送金した。|246の2||
+事例|会社の経理担当Aは、業務上預かっていた会社の金を自分の借金返済に流用した。|253||
+事例|Aは道に落ちていた財布を拾い、そのまま自分の物にした。|254||
+事例|Aは、知人が盗んだ物と知りながら高級時計を安く買い取った。|256,2||
+事例|Aは、突然殴りかかってきたBから身を守るため、Bを突き飛ばして負傷させた。|36,1||
+事例|AとBは強盗を計画し、Aが見張りをし、Bが店内で店員を脅して現金を奪った。|60||
+事例|公務員Aは、業者から便宜を図るよう依頼され、見返りに現金を受け取った。|197,1|受託収賄（同項後段）|
+事例|Aは人の住んでいる家屋にガソリンをまいて火をつけた。|108||
+事例|Aは返済の意思がないのに、すぐ返すと偽ってBから現金を借りた。|246,1||
+事例|Aは同居の父親の財布から無断で現金を抜き取った。刑の免除の根拠は？|244,1||`,
+刑訴:`論点|任意捜査の原則・強制処分法定主義|197,1|強制処分の意義（昭51決定）|
+論点|GPS捜査の強制処分性|197,1|平成29年大法廷判決|
+論点|おとり捜査の適法性|197,1||
+論点|写真・ビデオ撮影の適法性|197,1||
+手続|職務質問|2,1|所持品検査も本条を根拠に|警察官職務執行法
+手続|通常逮捕|199,1||
+手続|緊急逮捕|210,1||
+手続|現行犯人|212,1||
+手続|準現行犯人|212,2||
+手続|現行犯逮捕（何人でも令状なく）|213||
+手続|軽微事件の現行犯逮捕の制限|217||
+手続|被疑者の取調べ|198,1|出頭・滞留義務と任意性|
+手続|参考人の取調べ|223,1||
+手続|令状による差押え・捜索・検証|218,1||
+論点|令状の記載事項（特定性）|219,1||
+論点|逮捕に伴う無令状の捜索・差押え|220,1,2||
+論点|強制採尿（条件付捜索差押許可状）|218|昭55決定|
+手続|勾留の理由|60,1||
+手続|被疑者の勾留（準用）|207,1||
+手続|勾留期間（10日・延長）|208||
+手続|司法警察員から検察官への送致（48時間）|203,1||
+手続|検察官の勾留請求（24時間）|205,1||
+論点|接見交通権|39,1||
+論点|接見指定|39,3||
+手続|被疑者国選弁護|37の2,1||
+用語|国家訴追主義|247||
+用語|起訴便宜主義（起訴猶予）|248||
+用語|公訴の効力の人的範囲|249||
+用語|公訴時効期間|250||
+論点|訴因の明示・特定|256,3||
+用語|起訴状一本主義（予断排除）|256,6||
+論点|訴因変更（公訴事実の同一性）|312,1||
+手続|公判前整理手続|316の2,1||
+手続|類型証拠開示|316の15,1||
+手続|主張関連証拠開示|316の20,1||
+用語|証拠裁判主義|317||
+用語|自由心証主義（刑訴）|318||
+論点|自白法則（任意性）|319,1||
+論点|補強法則（刑訴）|319,2||
+論点|伝聞法則|320,1||
+用語|裁判官面前調書|321,1,1||
+論点|検察官面前調書（2号書面）|321,1,2||
+論点|司法警察員面前調書等（3号書面）|321,1,3||
+用語|公判準備・公判期日の供述録取書、裁判所の検証調書|321,2||
+論点|捜査機関の検証調書（実況見分調書）|321,3||
+用語|鑑定書|321,4||
+論点|被告人の供述書・供述録取書|322,1||
+用語|特に信用すべき書面（業務文書等）|323||
+論点|被告人の供述を内容とする伝聞供述|324,1||
+論点|被告人以外の者の供述を内容とする伝聞供述|324,2||
+用語|同意書面|326,1||
+用語|合意書面|327||
+論点|弾劾証拠|328|自己矛盾供述に限る（判例）|
+用語|有罪判決の理由（罪となるべき事実）|335,1||
+用語|無罪判決|336||
+用語|免訴|337||
+用語|公訴棄却の判決|338||
+用語|控訴審の破棄自判|400||
+用語|不利益変更の禁止（刑訴）|402||
+用語|再審事由（新規明白な証拠）|435,,6||
+事例|警察官は、深夜、包丁を持って被害者を追いかけている男を目撃し、令状なく逮捕した。|213|||212,1
+事例|殺人事件から約1時間半後、現場から約4km離れた場所で、着衣に血の付いた男を発見し令状なく逮捕した。|212,2,3|準現行犯：身体又は被服に犯罪の顕著な証跡||213
+事例|被疑者を自宅で逮捕した際、令状なく自宅内を捜索し、覚醒剤を発見して差し押さえた。|220,1,2||
+事例|検察官が作成した被害者の供述録取書について被告人側が不同意とし、被害者は公判で調書と異なる証言をした。|321,1,2|相反供述・相対的特信情況|
+事例|目撃者Wが公判で「被告人が『自分がやった』と言うのを聞いた」と証言した。|324,1|322条を準用|
+事例|弁護人が留置中の被疑者との接見を申し出たが、捜査官は取調べ中を理由に日時を指定した。|39,3||
+事例|窃盗の訴因で起訴された被告人について、検察官が同一機会の盗品有償譲受けの訴因への変更を請求した。|312,1||`
+};
+
+/* ===================== 目次 ===================== [階層, 見出し, 最初の条, 最後の条] */
+const TOC={
+'憲法':[[1,'第1章 天皇','1','8'],[1,'第2章 戦争の放棄','9','9'],[1,'第3章 国民の権利及び義務','10','40'],[1,'第4章 国会','41','64'],[1,'第5章 内閣','65','75'],[1,'第6章 司法','76','82'],[1,'第7章 財政','83','91'],[1,'第8章 地方自治','92','95'],[1,'第9章 改正','96','96'],[1,'第10章 最高法規','97','99'],[1,'第11章 補則','100','103']],
+'民法':[[1,'第1編 総則','1','174'],[2,'第1章 通則','1','2'],[2,'第2章 人','3','32の2'],[2,'第3章 法人','33','37'],[2,'第4章 物','85','89'],[2,'第5章 法律行為','90','137'],[2,'第6章 期間の計算','138','143'],[2,'第7章 時効','144','174'],[1,'第2編 物権','175','398の22'],[2,'第1章 総則','175','179'],[2,'第2章 占有権','180','205'],[2,'第3章 所有権','206','264の14'],[2,'第4章 地上権','265','269の2'],[2,'第5章 永小作権','270','279'],[2,'第6章 地役権','280','294'],[2,'第7章 留置権','295','302'],[2,'第8章 先取特権','303','341'],[2,'第9章 質権','342','368'],[2,'第10章 抵当権','369','398の22'],[1,'第3編 債権','399','724の2'],[2,'第1章 総則','399','520の20'],[2,'第2章 契約','521','696'],[2,'第3章 事務管理','697','702'],[2,'第4章 不当利得','703','708'],[2,'第5章 不法行為','709','724の2'],[1,'第4編 親族','725','881'],[1,'第5編 相続','882','1050']],
+'刑法':[[1,'第1編 総則','1','72'],[2,'第1章 通則','1','8'],[2,'第2章 刑','9','21'],[2,'第3章 期間計算','22','24'],[2,'第4章 刑の執行猶予','25','27の7'],[2,'第5章 仮釈放','28','30'],[2,'第6章 刑の時効及び刑の消滅','31','34の2'],[2,'第7章 犯罪の不成立及び刑の減免','35','42'],[2,'第8章 未遂罪','43','44'],[2,'第9章 併合罪','45','55'],[2,'第10章 累犯','56','59'],[2,'第11章 共犯','60','65'],[2,'第12章 酌量減軽','66','67'],[2,'第13章 加重減軽の方法','68','72'],[1,'第2編 罪','77','264'],[2,'公務の執行を妨害する罪','95','96の6'],[2,'逃走の罪','97','102'],[2,'犯人蔵匿及び証拠隠滅の罪','103','105の2'],[2,'放火及び失火の罪','108','118'],[2,'住居を侵す罪','130','132'],[2,'通貨偽造の罪','148','153'],[2,'文書偽造の罪','154','161の2'],[2,'偽証の罪','169','171'],[2,'虚偽告訴の罪','172','173'],[2,'汚職の罪','193','198'],[2,'殺人の罪','199','203'],[2,'傷害の罪','204','208の2'],[2,'過失傷害の罪','209','211'],[2,'遺棄の罪','217','219'],[2,'逮捕及び監禁の罪','220','221'],[2,'脅迫の罪','222','223'],[2,'略取、誘拐及び人身売買の罪','224','229'],[2,'名誉に対する罪','230','232'],[2,'信用及び業務に対する罪','233','234の2'],[2,'窃盗及び強盗の罪','235','245'],[2,'詐欺及び恐喝の罪','246','251'],[2,'横領の罪','252','255'],[2,'盗品等に関する罪','256','257'],[2,'毀棄及び隠匿の罪','258','264']],
+'会社法':[[1,'第1編 総則','1','24'],[1,'第2編 株式会社','25','574'],[2,'第1章 設立','25','103'],[2,'第2章 株式','104','235'],[2,'第3章 新株予約権','236','294'],[2,'第4章 機関','295','430の3'],[3,'株主総会及び種類株主総会','295','325の7'],[3,'役員等の選任及び解任','329','347'],[3,'取締役','348','361'],[3,'取締役会','362','373'],[3,'監査役','381','389'],[3,'役員等の損害賠償責任','423','430'],[2,'第5章 計算等','431','465'],[2,'第6章 定款の変更','466','466'],[2,'第7章 事業の譲渡等','467','470'],[2,'第8章 解散','471','474'],[2,'第9章 清算','475','574'],[1,'第3編 持分会社','575','675'],[1,'第4編 社債','676','742'],[1,'第5編 組織変更・合併・会社分割・株式交換等','743','816の10'],[1,'第6編 外国会社','817','823'],[1,'第7編 雑則','824','959'],[2,'会社の組織に関する訴え','828','846'],[2,'株式会社における責任追及等の訴え','847','853'],[2,'登記','907','938'],[1,'第8編 罰則','960','979']],
+'商法':[[1,'第1編 総則','1','32'],[1,'第2編 商行為','501','683'],[2,'第1章 総則','501','523'],[2,'第2章 売買','524','528'],[1,'第3編 海商','684','850']],
+'民事訴訟法':[[1,'第1編 総則','1','132の13'],[2,'第1章 通則','1','3'],[2,'第2章 裁判所','3の2','27'],[2,'第3章 当事者','28','60'],[2,'第4章 訴訟費用','61','86'],[2,'第5章 訴訟手続','87','132'],[1,'第2編 第一審の訴訟手続','133','280'],[2,'第1章 訴え','133','147'],[2,'第3章 口頭弁論及びその準備','148','178'],[2,'第4章 証拠','179','242'],[2,'第5章 判決','243','260'],[2,'第6章 裁判によらない訴訟の完結','261','267の2'],[1,'第3編 上訴','281','337'],[2,'第1章 控訴','281','310の2'],[2,'第2章 上告','311','327'],[2,'第3章 抗告','328','337'],[1,'第4編 再審','338','349'],[1,'第5編以下 特別の手続','350','405']],
+'刑事訴訟法':[[1,'第1編 総則','1','188の7'],[2,'弁護及び補佐','30','42'],[2,'裁判','43','46'],[2,'被告人の召喚・勾引及び勾留','57','98の24'],[2,'押収及び捜索','99','127'],[2,'検証','128','142'],[2,'証人尋問','143','164'],[2,'鑑定','165','174'],[1,'第2編 第一審','189','350の29'],[2,'第1章 捜査','189','246'],[2,'第2章 公訴','247','270'],[2,'第3章 公判','271','350'],[3,'公判準備及び公判手続','271','316'],[3,'争点及び証拠の整理手続','316の2','316の32'],[3,'証拠','317','328'],[3,'公判の裁判','329','350'],[2,'合意制度・即決裁判手続','350の2','350の29'],[1,'第3編 上訴','351','434'],[2,'控訴','372','404'],[2,'上告','405','418'],[2,'抗告','419','434'],[1,'第4編 再審','435','453'],[1,'第5編以下 非常上告・略式手続・執行','454','507']],
+'行政事件訴訟法':[[1,'第1章 総則','1','7'],[1,'第2章 抗告訴訟','8','38'],[2,'第1節 取消訴訟','8','35'],[2,'第2節 その他の抗告訴訟','36','38'],[1,'第3章 当事者訴訟','39','41'],[1,'第4章 民衆訴訟及び機関訴訟','42','43'],[1,'第5章 補則','44','46']],
+'行政手続法':[[1,'第1章 総則','1','4'],[1,'第2章 申請に対する処分','5','11'],[1,'第3章 不利益処分','12','31'],[2,'通則','12','14'],[2,'聴聞','15','28'],[2,'弁明の機会の付与','29','31'],[1,'第4章 行政指導','32','36の2'],[1,'第4章の2 処分等の求め','36の3','36の3'],[1,'第5章 届出','37','37'],[1,'第6章 意見公募手続等','38','45'],[1,'第7章 補則','46','46']],
+'国家賠償法':[[1,'公権力の行使（1条）','1','1'],[1,'営造物の設置管理（2条）','2','2'],[1,'費用負担者（3条）','3','3'],[1,'民法の適用（4条）','4','4'],[1,'他の法律・相互保証（5・6条）','5','6']]
+};
+
+
+/* ===================== 略語（ソース「略語一覧」準拠） ===================== */
+const ABBR_SRC='請求=㋝|手続=[手]|裁判=Ⓣ|行為=[行]|必要=❕|原則=[★]|責任=[責]|利益=[益]|証拠=㋛|財産=💰|株式=●|目的=🎯|準用=[準]|訴訟=㋞|判決=🔨|期間=[期]|執行=[執]|義務=Ⓞ|制限=[制]|処分=[処]|権利=[権]|取消し=[消]|取得=[得]|変更=[変]|要件=㋵|通知=㋡|意思=[意]|事実=Ⓕ|費用=[費]|行使=Ⓤ|理由=[由]|確定=[確]|命令=[命]|能力=[能]|効力=[効]|契約=[契]|申立て=[申]|禁止=[禁]|譲渡=[譲]|返還=[返]|管理=[管]|管轄=[轄]|損害=[損]|占有=[占]|対抗=[抗]|清算=[清]|保護=[保]|担保=㋟|書面=[書]|株主=㋦|弁済=[弁]|履行=[履]|無効=効❌|代理=[代]|債権=☞|債務=☜|危険=[危]|控訴=[控]|過失=[過]|社債=[社B]|新株=新●|拒絶=[拒]|尋問=[尋]|新株予約権=[新予権]|代表=Rep|法律=[法]|参加=[参]|解除=(解)|登記=㋣|侵害=[侵]|動産=📦|完成=[完]|承認=[承]|勾留=[留]|合意=🤝|時効=⌛|死亡=[死]|他人=(他)|令状=[令]|業務=[業]|差押え=[差]|逮捕=[逮]|文書=[文]|法人=Corp|支払=[払]|注意=[注]|故意=[故]|虚偽=[虚]|許可=[許]|供述=[供]|原因=[因]|陳述=[陳]|価額=[価]'
++'|賃貸人=㋑|被疑者=㋖|裁判所=㋚|損害を賠償する責任=㋩|損害賠償=㋩|賃借人=㋳|未成年=㋯|不法行為=㋫|債務者=㋰|債権者=㋘|抵当権=㋢|抵当=㋢|後見人=㋙|保証人=㋭|連帯保証人=連㋭'
++'|被告人=Ⓐ|弁護士=Ⓑ|抗弁=Ⓔ|裁判官=Ⓙ|警察官=Ⓚ|検察官=Ⓟ|再抗弁=Ⓡ|被害者=Ⓥ|目撃者=Ⓦ|原告=Ⓧ|被告=Ⓨ|参加人=Ⓩ'
++'|不動産=⌂|第三者=㊂|善意無過失=◎無過|善意=◎|悪意=⊗|無過失=無過|重過失=重過|売主=㋒|買主=㋕|代理人=㈹|無権代理人=無㈹|公共の福祉=[公福]'
++'|心裡留保=[心留]|虚偽表示=[虚表]|錯誤=[錯]|詐欺=[欺]|強迫=[迫]|公序良俗=[公良]|事務管理=[事管]|債務不履行=[債不]|履行遅滞=[履遅]|履行不能=[履不]|詐害行為取消=[詐消]|債権者代位=[㋘代]|相殺=[殺]|追認=[追]|先取特権=[先特]|法定地上権=[法地]|取得時効=[取時]|消滅時効=[消時]|即時取得=[即取]'
++'|株主総会=[㋦会]|定款=[款]|公開会社=[公]|口頭弁論=[口弁]|独立当事者参加=[独参]|補助参加=[補参]|反訴=[↩訴]|既判力=[既]|通常共同訴訟=[常共㋞]'
++'|法の下の平等=[法下平]|表現の自由=[表自]|信教の自由=[信自]|学問の自由=[学自]|集会の自由=[集自]|結社の自由=[結自]|思想及び良心の自由=[思良自]|政教分離=政教分|目的効果基準=[目効基]|幸福追求=[幸追]|内閣=[閣]|国会=🏛|衆議院=[衆]|地方公共団体=[地団]|公務員=(公員)|適正手続=[適手]|令状主義=[状主]|租税法律主義=租法主|地方自治の本旨=地自本'
++'|強制処分=[強処]|任意捜査=[任捜]|証拠能力=[証能]|現行犯逮捕=[現逮]|緊急逮捕=[緊逮]|通常逮捕=[通逮]|職務質問=[職質]|検察官面前調書=[検面調]|実況見分調書=[実見調]|伝聞=[伝]|接見交通権=接見権|共同正犯=[共正]|共謀共同正犯=[謀共正]|正当防衛=[正防]|過剰防衛=[過防]|心神喪失=[心喪]|心神耗弱=[心耗]'
++'|ただし書=※|及び=・|又は=∨'
++'|構成要件=[構]|監督人=㊬|監査役=(監役)|発起人=(発)|相続=[相]|相続人=(相)|会社=©|取締役=Ⓓ|例外=※|特則=※|金銭=￥';
+const ABBR_MAP=new Map(ABBR_SRC.split('|').map(x=>x.split('=')).filter(x=>x.length===2&&x[0]));
+const ABBR_RE=new RegExp([...ABBR_MAP.keys()].sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');
+const KO='①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳',GO='❶❷❸❹❺❻❼❽❾❿⓫⓬⓭⓮⓯⓰⓱⓲⓳⓴';
+
+/* ===================== ユーティリティ ===================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toHalf(s){return String(s??'').replace(/[０-９．，－]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[ー―‐−]/g,'-').replace(/、/g,',');}
+function parseArt(s){
+  s=toHalf(s).replace(/[第条\s]/g,'');
+  if(!s) return null;
+  const m=s.match(/^(\d{1,4})(?:(?:の|ノ|\.|-|_)(\d{1,2}))?$/);
+  if(!m||+m[1]===0) return null;
+  return {b:+m[1],e:m[2]?+m[2]:0};
+}
+function parseAns(str){
+  const p=String(str).split(',');
+  const a=parseArt(p[0]); if(!a) return null;
+  return {b:a.b,e:a.e,k:+(p[1]||0)||0,g:+(p[2]||0)||0};
+}
+function parseLoose(str){
+  let s=toHalf(String(str||'')).replace(/\s/g,'');
+  if(!s) return null;
+  if(s.includes(',')) return parseAns(s);
+  const ki=KO.indexOf(s.slice(-1));
+  const m=s.match(/^第?(\d{1,4})条?(?:(?:の|ノ)(\d{1,2}))?条?(?:第?(\d{1,2})項)?(?:第?(\d{1,2})号)?$/);
+  if(m&&+m[1]>0) return {b:+m[1],e:m[2]?+m[2]:0,k:m[3]?+m[3]:0,g:m[4]?+m[4]:0};
+  const m2=s.match(/^(\d{1,4})(?:の(\d{1,2}))?([①-⑳])?([❶-❿⓫-⓴])?$/);
+  if(m2) return {b:+m2[1],e:m2[2]?+m2[2]:0,k:m2[3]?KO.indexOf(m2[3])+1:0,g:m2[4]?GO.indexOf(m2[4])+1:0};
+  const a=parseArt(s); return a?{...a,k:0,g:0}:(ki>=0?null:null);
+}
+const artStr=a=>a.b+(a.e?'の'+a.e:'');
+function fmtA(a){
+  if(!a)return '—';
+  if(S.settings.abbr) return `${artStr(a)}${a.k?(KO[a.k-1]||'('+a.k+')'):''}${a.g?(GO[a.g-1]||'['+a.g+']'):''}`;
+  return `${a.b}条${a.e?'の'+a.e:''}${a.k?(a.e?'第':'')+a.k+'項':''}${a.g?a.g+'号':''}`;
+}
+const aCode=a=>`${artStr(a)},${a.k||''},${a.g||''}`;
+const num=s=>{const a=parseArt(s);return a?a.b+a.e/1000:0};
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36);}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const pad2=n=>String(n).padStart(2,'0');
+let toastT=null;
+function toast(msg,bad,ms){const t=$('#toast');t.textContent=msg;t.className=bad?'bad':'';t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,ms||2200);}
+const IN_ARTIFACT=!!window.claude||/claude\.ai|claudeusercontent|anthropic/.test(location.hostname);
+
+/* ===================== 問題データ ===================== */
+function buildBank(){
+  const out=[];
+  for(const s of SUBJ){
+    for(const line of BANK_SRC[s].split('\n')){
+      const t=line.trim(); if(!t) continue;
+      const [ty,p,a,n,law,alt]=t.split('|');
+      const L=(law||'').trim()||DEF_LAW[s];
+      const ans=parseAns(a); if(!ans) continue;
+      out.push({id:'b'+hash(s+'|'+L+'|'+p),s,law:L,ty,p,a:ans,n:n||'',alts:alt?alt.split(';').map(parseAns).filter(Boolean):[],src:'bank'});
+    }
+  }
+  return out;
+}
+const BANK=buildBank();
+function normCustom(c){
+  const a=parseAns(c.a); if(!a||!c.p) return null;
+  return {id:c.id,s:SUBJ.includes(c.s)?c.s:'民法',law:c.law||DEF_LAW[c.s]||'民法',ty:TYPES.includes(c.ty)?c.ty:'KW',p:c.p,a,n:c.n||'',alts:c.alt?String(c.alt).split(';').map(parseAns).filter(Boolean):[],src:c.src||'user'};
+}
+
+/* ===================== 状態と保存 ===================== */
+const LS='jsniper.v1';
+const DEF_SET={subj:'all',type:'all',toc:true,artMode:'dial',kgMode:'btn',layout:'auto',qfs:3,abbr:true,anim:true,pencil:false};
+const DEF_SYNC={repo:'',token:'',auto:true,last:0,err:'',pushed:0};
+let S={custom:[],stats:{},rv:{},del:{},settings:{...DEF_SET},sync:{...DEF_SYNC},chg:0};
+(function load(){
+  try{
+    const raw=localStorage.getItem(LS);
+    if(raw){const d=JSON.parse(raw);S={...S,...d,settings:{...DEF_SET,...(d.settings||{})},sync:{...DEF_SYNC,...(d.sync||{})}};return;}
+    const old=localStorage.getItem('jobunpro.v1');
+    if(old){const d=JSON.parse(old);S.custom=(d.custom||[]).map(c=>({...c,m:c.m||c.ts||Date.now()}));S.stats=d.stats||{};S.del=d.del||{};for(const [id,t] of Object.entries(d.review||{}))S.rv[id]=t;S.settings={...DEF_SET,...(d.settings||{})};}
+  }catch(e){}
+})();
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){toast('この端末に保存できませんでした（容量不足の可能性）',true);}}
+function touch(){S.chg=(S.chg||0)+1;saveLocal();scheduleSync();}
+const inRev=id=>(S.rv[id]||0)>0;
+function setRev(id,on){S.rv[id]=on?Date.now():-Date.now();}
+const revIds=()=>Object.keys(S.rv).filter(inRev);
+
+let Q=[],IDX=new Map();
+function rebuild(){
+  const custom=S.custom.filter(c=>!(S.del[c.id]>=(c.m||c.ts||0))).map(normCustom).filter(Boolean);
+  Q=[...BANK,...custom];IDX=new Map(Q.map(q=>[q.id,q]));
+}
+rebuild();
+
+/* ===================== GitHub 同期（論PASSと同じ方式） ===================== */
+const DATA_PATH='jobun-sniper/data.json';
+const syncReady=()=>!!(S.sync.repo&&S.sync.token);
+let syncT=0,syncing=false,syncAgain=false;
+function scheduleSync(ms){if(!syncReady()||!S.sync.auto||IN_ARTIFACT)return;clearTimeout(syncT);syncT=setTimeout(()=>syncNow(false),ms||12000);}
+const hhmm=t=>{const d=new Date(t);return d.getHours()+':'+pad2(d.getMinutes())};
+function syncInfoText(){
+  if(!syncReady())return '未設定です。下の手順で設定すると、端末間で自動同期されます。';
+  return (S.sync.last?`最終同期：${new Date(S.sync.last).toLocaleString('ja-JP')}`:'まだ同期していません')+(S.sync.err?`／前回のエラー：${S.sync.err}`:'')+(S.chg!==S.sync.pushed?'／未送信の変更あり':'');
+}
+function setSyncStat(st){
+  const b=$('#syncB');
+  b.className='syncb'+(st==='err'?' err':syncReady()&&st!=='off'?' ok':'');
+  b.textContent=!syncReady()?'☁ 未設定':st==='busy'?'☁ 同期中…':st==='err'?'☁ 同期失敗':st==='off'?'☁ オフライン':(S.sync.last?'☁ '+hhmm(S.sync.last):'☁ 同期');
+  const i=$('#syncInfo');if(i)i.textContent=syncInfoText();
+}
+function b64utf8(str){const by=new TextEncoder().encode(str);let bin='';for(let i=0;i<by.length;i+=0x8000)bin+=String.fromCharCode.apply(null,by.subarray(i,i+0x8000));return btoa(bin);}
+function utf8b64(b64){const bin=atob(String(b64).replace(/\s/g,''));const by=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);return new TextDecoder().decode(by);}
+async function gh(path,o){
+  o=o||{};const h={'Authorization':'Bearer '+S.sync.token,'Accept':o.raw?'application/vnd.github.raw+json':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  if(o.body)h['Content-Type']='application/json';
+  const r=await fetch('https://api.github.com'+path,{method:o.method||'GET',headers:h,body:o.body?JSON.stringify(o.body):undefined,cache:'no-store'});
+  if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;try{e.msg=(await r.json()).message}catch(_){}throw e;}
+  return o.raw?r.text():r.json();
+}
+function syncErr(e){const s=e&&e.status;if(s===401)return 'トークンが無効か期限切れです';if(s===403)return 'トークンの権限が足りません（Contents: Read and write）';if(s===404)return 'リポジトリが見つかりません（名前とトークンの対象を確認）';if(!s)return e&&e.msg||'通信できませんでした';return e.msg||e.message||'不明なエラー';}
+function repoBase(){
+  const [o,rp]=S.sync.repo.trim().split('/');
+  if(!o||!rp){const e=new Error('リポジトリ名は「ユーザー名/リポジトリ名」の形で入力してください');e.msg=e.message;throw e;}
+  return `/repos/${encodeURIComponent(o)}/${encodeURIComponent(rp)}`;
+}
+function mergeRemote(R){
+  let ch=false;
+  for(const [k,t] of Object.entries(R.del||{}))if(!(S.del[k]>=t)){S.del[k]=t;ch=true;}
+  const map=new Map(S.custom.map(c=>[c.id,c]));
+  for(const rc of R.custom||[]){if(!rc||!rc.id)continue;const rm=rc.m||rc.ts||0;if(S.del[rc.id]>=rm)continue;const l=map.get(rc.id);if(!l||rm>(l.m||l.ts||0)){map.set(rc.id,rc);ch=true;}}
+  const kept=[...map.values()].filter(c=>!(S.del[c.id]>=(c.m||c.ts||0)));
+  if(kept.length!==S.custom.length)ch=true;S.custom=kept;
+  for(const [id,st] of Object.entries(R.stats||{})){const l=S.stats[id];if(!l||(st.ts||0)>(l.ts||0)){S.stats[id]=st;ch=true;}}
+  for(const [id,t] of Object.entries(R.rv||{})){const l=S.rv[id];if(l===undefined||Math.abs(t)>Math.abs(l)){S.rv[id]=t;ch=true;}}
+  return ch;
+}
+async function doSync(retry){
+  const base=repoBase();
+  let sha=null,remote=null;
+  try{
+    const f=await gh(`${base}/contents/${DATA_PATH}`);sha=f.sha;
+    let txt=f.content?utf8b64(f.content):'';
+    if(!txt&&f.size>0)txt=await gh(`${base}/contents/${DATA_PATH}`,{raw:true});
+    remote=txt?JSON.parse(txt):null;
+  }catch(e){if(e.status!==404)throw e;}
+  const chg0=S.chg;let ch=false;
+  if(remote){ch=mergeRemote(remote);if(ch){rebuild();saveLocal();}}
+  if(!sha||chg0!==S.sync.pushed){
+    const data={app:'jobun-sniper',v:1,at:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del};
+    const body={message:'sync '+data.at,content:b64utf8(JSON.stringify(data))};if(sha)body.sha=sha;
+    try{await gh(`${base}/contents/${DATA_PATH}`,{method:'PUT',body});}
+    catch(e){if(!retry&&(e.status===409||e.status===422))return doSync(true);throw e;}
+    S.sync.pushed=chg0;
+  }
+  return ch;
+}
+async function syncNow(manual){
+  if(IN_ARTIFACT){if(manual)toast('プレビューでは同期できません。GitHub Pages版で使ってください',true,3500);return;}
+  if(!syncReady()){if(manual){show('data');toast('リポジトリとトークンを設定してください');}return;}
+  if(!navigator.onLine){setSyncStat('off');if(manual)toast('オフラインです。つながったら自動で同期します');return;}
+  if(syncing){syncAgain=true;return;}
+  syncing=true;clearTimeout(syncT);setSyncStat('busy');
+  try{
+    const ch=await doSync(false);S.sync.last=Date.now();S.sync.err='';saveLocal();setSyncStat('ok');
+    if(ch){bag=[];updBadge();if(curView!=='quiz'||!cur)refreshCurrentView();else renderSess();}
+    if(manual)toast(ch?'同期しました（ほかの端末の記録を取り込みました）':'同期しました');
+  }catch(e){S.sync.err=syncErr(e);saveLocal();setSyncStat('err');if(manual)toast('同期に失敗：'+S.sync.err,true,4000);}
+  finally{syncing=false;if(syncAgain){syncAgain=false;scheduleSync(2000);}}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(!syncReady()||!S.sync.auto||IN_ARTIFACT)return;
+  if(document.hidden){if(S.chg!==S.sync.pushed)syncNow(false);}
+  else if(Date.now()-(S.sync.last||0)>60000)syncNow(false);
+});
+window.addEventListener('online',()=>{if(syncReady()&&S.sync.auto)syncNow(false);});
+
+/* ===================== 採点 ===================== */
+function chapterOf(law,a){
+  const t=TOC[law];if(!t)return null;
+  const v=a.b+a.e/1000;const path=[];
+  for(const [lv,label,f,to] of t){if(v>=num(f)&&v<=num(to)){path[lv-1]=label;path.length=lv;}}
+  const p=path.filter(Boolean);return p.length?p:null;
+}
+function scoreOne(c,a,law){
+  if(a.b===c.b&&a.e===c.e){
+    let s=100;
+    if(c.k){if(!a.k)s-=15;else if(a.k!==c.k)s-=25;else if(c.g){if(!a.g)s-=10;else if(a.g!==c.g)s-=15;}}
+    else if(c.g){if(!a.g)s-=10;else if(a.g!==c.g)s-=15;}
+    return s;
+  }
+  if(a.b===c.b) return 80;
+  const d=Math.abs(a.b-c.b);
+  let s=d===1?70:d<=3?55:d<=10?40:d<=30?22:d<=100?10:3;
+  const pa=chapterOf(law,a),pc=chapterOf(law,c);
+  if(pa&&pc&&pa.join('>')===pc.join('>'))s=Math.min(s+8,79);
+  return s;
+}
+function grade(q,a){let best=scoreOne(q.a,a,q.law);for(const alt of q.alts)best=Math.max(best,scoreOne(alt,a,q.law));return best;}
+function verdict(p){return p===100?['命中','v1']:p>=75?['かすった','v2']:p>=40?['射程内','v3']:['大外れ','v4'];}
+function speedLabel(sec){return sec<=6?'早撃ち':sec<=15?'標準':'じっくり';}
+const ab=s=>S.settings.abbr?String(s??'').replace(ABBR_RE,m=>ABBR_MAP.get(m)):String(s??'');
+
+/* ===================== 演出 ===================== */
+let fxT=0;
+function playFx(kind){
+  if(!S.settings.anim)return;
+  const fx=$('#fx');const gold=kind==='hit';
+  const n=gold?14:0;let parts='';
+  for(let i=0;i<n;i++){const ang=i/n*Math.PI*2+Math.random()*.3,dist=90+Math.random()*60;parts+=`<i class="p" style="--dx:${Math.round(Math.cos(ang)*dist)}px;--dy:${Math.round(Math.sin(ang)*dist)}px;animation-delay:${(.12+Math.random()*.08).toFixed(2)}s"></i>`;}
+  fx.innerHTML=`<div class="fxw" style="--fxc:${gold?'var(--gold)':'var(--cyan)'}">${parts}<span class="ring"></span>${gold?'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#f2c14f" stroke-width="3"/><circle cx="50" cy="50" r="22" fill="none" stroke="#f2c14f" stroke-width="1.5" opacity=".7"/><path d="M50 2v26M50 72v26M2 50h26M72 50h26" stroke="#f2c14f" stroke-width="3" stroke-linecap="round"/></svg>':''}<span class="txt">${gold?'命中！<small>BULLSEYE</small>':'かすった！'}</span></div>`;
+  fx.hidden=false;clearTimeout(fxT);fxT=setTimeout(()=>{fx.hidden=true;fx.innerHTML='';},gold?1000:800);
+}
+
+/* ===================== 出題 ===================== */
+let mode={kind:'normal'},bag=[],cur=null,qNo=0;
+let sess={n:0,perfect:0,sum:0,sec:0,score:0};
+let inp={d:[0,0,0,0],e:0,k:0,g:0};
+function poolIds(){
+  const st=S.settings;let list;
+  if(mode.kind==='review') list=revIds().map(id=>IDX.get(id)).filter(Boolean);
+  else if(mode.kind==='weak') list=mode.ids.map(id=>IDX.get(id)).filter(Boolean);
+  else if(mode.kind==='single') list=[IDX.get(mode.id)].filter(Boolean);
+  else{list=Q;if(st.subj!=='all')list=list.filter(q=>q.s===st.subj);if(st.type!=='all')list=list.filter(q=>q.ty===st.type);}
+  return list.map(q=>q.id);
+}
+function nextQ(){
+  if(mode.kind==='single'&&cur&&cur.done){mode={kind:'normal'};bag=[];}
+  let id=null;
+  for(let guard=0;guard<3&&!id;guard++){
+    if(!bag.length){bag=shuffle(poolIds());if(cur&&bag.length>1&&bag[bag.length-1]===cur.q.id){[bag[0],bag[bag.length-1]]=[bag[bag.length-1],bag[0]];}}
+    while(bag.length){const c=bag.pop();if(IDX.has(c)&&(mode.kind!=='review'||inRev(c))){id=c;break;}}
+    if(!id&&!poolIds().length)break;
+  }
+  if(!id){cur=null;renderQuiz();return;}
+  cur={q:IDX.get(id),t0:performance.now(),done:false};qNo++;
+  inp={d:[0,0,0,0],e:0,k:0,g:0};
+  renderQuiz();
+  if(S.settings.artMode==='text'){const el=$('#tArt');if(el&&matchMedia('(pointer:fine)').matches)el.focus();}
+}
+function readAnswer(){
+  const st=S.settings;let art;
+  if(st.artMode==='dial'){const b=inp.d[0]*1000+inp.d[1]*100+inp.d[2]*10+inp.d[3];art=b?{b,e:inp.e}:null;}
+  else{const el=$('#tArt');art=el?parseArt(el.value):null;}
+  if(!art)return null;
+  let k,g;
+  if(st.kgMode==='btn'){k=inp.k;g=inp.g;}
+  else{k=+toHalf(($('#tK')||{}).value||'')||0;g=+toHalf(($('#tG')||{}).value||'')||0;}
+  return {...art,k,g};
+}
+function submit(pass){
+  if(!cur||cur.done)return;
+  const sec=Math.round((performance.now()-cur.t0)/100)/10;
+  const ans=pass?null:readAnswer();
+  if(!pass&&!ans){const e=$('#ansErr');if(e)e.textContent=S.settings.artMode==='dial'?'条数をダイアルで合わせてください':'条数を入力してください（例：94、37の2、37.2）';return;}
+  const pts=pass?0:grade(cur.q,ans);
+  const q=cur.q;
+  const st=S.stats[q.id]||{n:0,s:0,t:0,b:0,p:0};
+  st.n++;st.s+=pts;st.t=Math.round((st.t+sec)*10)/10;st.l=pts;st.la=ans?aCode(ans):'パス';st.b=Math.max(st.b||0,pts);st.p=(st.p||0)+(pts===100?1:0);st.ts=Date.now();
+  S.stats[q.id]=st;
+  if(pts<40)setRev(q.id,true);else if(pts===100&&inRev(q.id))setRev(q.id,false);
+  const bonus=pts===100?Math.max(0,Math.round(15-sec)):0;
+  sess.n++;sess.sum+=pts;sess.sec+=sec;sess.score+=pts+bonus;if(pts===100)sess.perfect++;
+  cur.done=true;cur.res={ans,pts,sec,bonus,pass};
+  touch();updBadge();renderAns();renderToc();renderSess();
+  if(pts===100)playFx('hit');else if(pts>=75)playFx('graze');
+}
+const laFmt=la=>{if(!la||la==='パス')return la||'—';if(la.includes(','))return fmtA(parseAns(la));return la;};
+function modeLabel(){
+  if(mode.kind==='review')return `復習モード（リスト ${revIds().length}問）`;
+  if(mode.kind==='weak')return `苦手集中モード（${mode.ids.length}問）`;
+  if(mode.kind==='single')return '指定した1問に挑戦';
+  return '';
+}
+const QFS=[18,22,26,32,40];
+function applySettings(){
+  document.documentElement.style.setProperty('--qfs',QFS[(S.settings.qfs||3)-1]+'px');
+  applyLayout();
+}
+const landMQ=matchMedia('(orientation: landscape) and (min-width: 820px)');
+function isH(){const l=S.settings.layout;return l==='h'||(l==='auto'&&landMQ.matches);}
+function applyLayout(){
+  const st=$('#stage');const h=isH();
+  st.classList.toggle('h',h);st.classList.toggle('notoc',!S.settings.toc);
+}
+(landMQ.addEventListener?landMQ.addEventListener('change',applyLayout):landMQ.addListener(applyLayout));
+function segHTML(key,label,opts){
+  const v=String(S.settings[key]);
+  return `<div class="seg" data-set="${key}"><span>${label}</span>${opts.map(([val,l])=>`<button data-v="${val}" class="${String(val)===v?'on':''}">${l}</button>`).join('')}</div>`;
+}
+function renderCtrl(){
+  const st=S.settings;
+  $('#subjChips').innerHTML=['all',...SUBJ].map(s=>`<button class="chip${st.subj===s?' on':''}" data-act="subj" data-v="${s}">${s==='all'?'全科目':s}</button>`).join('');
+  $('#typeChips').innerHTML=['all',...TYPES].map(t=>`<button class="chip${st.type===t?' on':''}" data-act="type" data-v="${t}">${t==='all'?'全種別':TL[t]}</button>`).join('');
+  $('#segs').innerHTML=segHTML('layout','配置',[['auto','自動'],['h','横'],['v','縦']])
+    +segHTML('toc','目次',[['true','表示'],['false','非表示']])
+    +segHTML('qfs','文字',[[1,'小'],[2,'中'],[3,'大'],[4,'特大'],[5,'最大']])
+    +segHTML('artMode','条',[['dial','ダイアル'],['text','テキスト']])
+    +segHTML('kgMode','項・号',[['btn','ボタン'],['text','テキスト']]);
+}
+function renderQuiz(){
+  renderCtrl();applySettings();
+  const mb=$('#modeBar');
+  if(mode.kind==='normal')mb.hidden=true;
+  else{mb.hidden=false;mb.innerHTML=`<span>${esc(modeLabel())}</span><button class="btn sm ghost" data-act="exitMode">通常の出題に戻る</button>`;}
+  if(!cur){
+    $('#qcard').innerHTML=`<p class="empty">${mode.kind==='review'?'復習リストは空です。全弾命中、お見事。':'この条件に合う問題がありません。科目や種別を変えてください。'}</p>`;
+    $('#ansBox').innerHTML='';$('#tocBox').innerHTML='';renderSess();return;
+  }
+  const q=cur.q;
+  const srcTag=q.src==='bank'?'':`<span class="tag u">${q.src==='ai'?'AI抽出':'自作'}</span>`;
+  $('#qcard').innerHTML=`<div class="qtags"><span class="tag s">${esc(q.s)}</span>${q.law!==q.s?`<span class="tag">${esc(q.law)}</span>`:''}<span class="tag t">${esc(TL[q.ty]||q.ty)}</span>${srcTag}
+    <span class="qtools"><button class="fsb" data-act="fs" data-d="-1" aria-label="文字を小さく">A−</button><button class="fsb" data-act="fs" data-d="1" aria-label="文字を大きく">A＋</button><span class="timer"><span id="tnum">0.0</span><small>秒</small></span></span></div>
+  <p class="qtext">${esc(ab(q.p))}</p>
+  <p class="qhint">${q.ty==='事例'?'この事例で使う条文を撃ち抜け':'対応する条文を撃ち抜け'}（第${qNo}問）</p>`;
+  renderToc();renderAns();renderSess();
+}
+function renderToc(){
+  const box=$('#tocBox');
+  if(!cur||!S.settings.toc){box.innerHTML='';box.hidden=true;return;}
+  box.hidden=false;
+  const t=TOC[cur.q.law];
+  if(!t){box.innerHTML=`<div class="toc"><h3>${esc(cur.q.law)} 目次</h3><p class="muted small" style="margin:0">この法令の目次データはありません。</p></div>`;return;}
+  const v=cur.done?cur.q.a.b+cur.q.a.e/1000:-1;
+  box.innerHTML=`<div class="toc"><h3>${esc(cur.q.law)} 目次</h3><ul>${t.map(([lv,l,f,to])=>`<li class="l${lv}${v>=num(f)&&v<=num(to)?' hit':''}"><span>${esc(l)}</span><span class="rng">${f===to?f:f+'–'+to}</span></li>`).join('')}</ul></div>`;
+  if(cur.done){const hits=box.querySelectorAll('li.hit');const h=hits[hits.length-1];const ul=box.querySelector('ul');if(h&&ul)ul.scrollTop=Math.max(0,h.offsetTop-ul.offsetTop-ul.clientHeight/2);}
+}
+const WL=['千','百','十','一'];
+function dialHTML(){
+  return `<div class="dial" id="dial">${[0,1,2,3].map(i=>`<div class="wheel" data-w="${i}"><button data-act="dial" data-i="${i}" data-dir="1" aria-label="${WL[i]}の位を上げる">▲</button><div class="dg" id="dg${i}">0</div><button data-act="dial" data-i="${i}" data-dir="-1" aria-label="${WL[i]}の位を下げる">▼</button><div class="wl">${WL[i]}</div></div>`).join('')}
+  <span class="jo">の</span>
+  <div class="wheel eda" data-w="4"><button data-act="dial" data-i="4" data-dir="1" aria-label="枝番を上げる">▲</button><div class="dg" id="dg4">–</div><button data-act="dial" data-i="4" data-dir="-1" aria-label="枝番を下げる">▼</button><div class="wl">枝番</div></div></div>
+  <div class="dialtools"><button class="btn sm ghost" data-act="dialclr">クリア</button><span class="muted small">指・Apple Pencilで上下になぞる／ホイール／数字キーでも合わせられます</span></div>`;
+}
+function chipsHTML(kind,max){
+  const v=inp[kind];
+  let h=`<div class="numchips" id="${kind}Chips"><button class="none${v===0?' on':''}" data-act="${kind}" data-v="0">なし</button>`;
+  for(let i=1;i<=max;i++)h+=`<button class="${v===i?'on':''}" data-act="${kind}" data-v="${i}">${i}</button>`;
+  return h+'</div>';
+}
+function renderAns(){
+  const box=$('#ansBox');
+  if(!cur){box.innerHTML='';return;}
+  if(cur.done){renderResult();return;}
+  const st=S.settings;
+  const artUI=st.artMode==='dial'?dialHTML():`<div class="tin"><input class="t" id="tArt" inputmode="decimal" autocomplete="off" placeholder="94 / 37.2"><span class="u">条</span></div><p class="muted small" style="margin:6px 0 0">枝番は「37の2」「37.2」「37-2」のどれでも可。iPadはPencilで手書き入力もできます。</p>`;
+  const kUI=st.kgMode==='btn'?chipsHTML('k',10):`<div class="tin"><input class="t" id="tK" inputmode="numeric" autocomplete="off" placeholder="なし"><span class="u">項</span></div>`;
+  const gUI=st.kgMode==='btn'?chipsHTML('g',13):`<div class="tin"><input class="t" id="tG" inputmode="numeric" autocomplete="off" placeholder="なし"><span class="u">号</span></div>`;
+  box.innerHTML=`<div class="ans">
+    <div class="fld"><div class="fl">条</div><div class="body">${artUI}</div></div>
+    <div class="fld"><div class="fl">項</div><div class="body">${kUI}</div></div>
+    <div class="fld"><div class="fl">号</div><div class="body">${gUI}</div></div>
+    <div class="preview">照準 <b id="pv">—</b></div>
+    <p class="err" id="ansErr"></p>
+    <div class="acts"><button class="btn ghost" data-act="pass">見送る</button><button class="btn go" data-act="submit">撃つ！<kbd>Enter</kbd></button></div>
+  </div>`;
+  if(st.artMode==='dial'){updDial();bindWheels();}
+  updPreview();
+}
+function updDial(){
+  let lead=true;const allZero=inp.d.every(x=>x===0);
+  for(let i=0;i<4;i++){const el=$('#dg'+i);if(!el)return;const d=inp.d[i];if(d!==0)lead=false;el.textContent=d;el.classList.toggle('lz',(i<3&&lead)||(i===3&&allZero));}
+  const e=$('#dg4');if(e)e.textContent=inp.e?inp.e:'–';
+  updPreview();
+}
+function updPreview(){const pv=$('#pv');if(!pv)return;const a=readAnswer();pv.textContent=a?fmtA(a):'—';const er=$('#ansErr');if(er&&a)er.textContent='';}
+function stepDial(i,dir){
+  if(i===4)inp.e=(inp.e+dir+31)%31;else inp.d[i]=(inp.d[i]+dir+10)%10;
+  updDial();
+}
+let drag=null,suppressClick=false;
+function bindWheels(){
+  document.querySelectorAll('#dial .wheel').forEach(w=>{
+    const i=+w.dataset.w;
+    w.addEventListener('wheel',e=>{e.preventDefault();stepDial(i,e.deltaY<0?1:-1);},{passive:false});
+    w.addEventListener('pointerdown',e=>{
+      if(S.settings.pencil&&e.pointerType==='touch'&&!e.target.closest('button'))return;
+      drag={i,y:e.clientY,moved:false,id:e.pointerId,step:e.pointerType==='pen'?16:22};
+      try{w.setPointerCapture(e.pointerId);}catch(_){}
+    });
+    w.addEventListener('pointermove',e=>{
+      if(!drag||drag.id!==e.pointerId)return;
+      const dy=drag.y-e.clientY;const steps=Math.trunc(dy/drag.step);
+      if(steps){drag.moved=true;for(let k=0;k<Math.abs(steps);k++)stepDial(i,steps>0?1:-1);drag.y-=steps*drag.step;}
+    });
+    const end=e=>{if(drag&&drag.id===e.pointerId){if(drag.moved){suppressClick=true;setTimeout(()=>suppressClick=false,80);}drag=null;}};
+    w.addEventListener('pointerup',end);w.addEventListener('pointercancel',end);
+  });
+}
+function renderResult(){
+  const q=cur.q,r=cur.res;const [vl,vc]=verdict(r.pts);
+  const path=chapterOf(q.law,q.a);
+  const alts=q.alts.length?`<div><dt>別解として可</dt><dd>${q.alts.map(fmtA).join('・')}</dd></div>`:'';
+  $('#ansBox').innerHTML=`<div class="res ${vc}">
+    <div class="verdict"><span class="vlabel">${r.pass?'見送り':vl}</span><span class="pts">${r.pts}<small>/100 近さ</small></span></div>
+    <div class="meter"><i style="width:${r.pts}%"></i></div>
+    <dl class="cmp">
+      <div><dt>あなた</dt><dd>${r.ans?fmtA(r.ans):'—'}</dd></div>
+      <div><dt>正解（${esc(q.law)}）</dt><dd class="ok">${fmtA(q.a)}</dd></div>
+      ${alts}
+      <div><dt>解答時間</dt><dd>${r.sec.toFixed(1)}秒・${speedLabel(r.sec)}</dd></div>
+      <div><dt>外れ度</dt><dd>${100-r.pts}${r.bonus?`　<span class="muted small">早撃ち+${r.bonus}</span>`:''}</dd></div>
+    </dl>
+    ${q.n?`<p class="note">${esc(ab(q.n))}</p>`:''}
+    ${path?`<p class="where">${esc(q.law)} › ${path.map(esc).join(' › ')}</p>`:''}
+    <div class="acts"><button class="btn ghost" data-act="togRev">${inRev(q.id)?'復習リストから外す':'復習リストに入れる'}</button><button class="btn pri" data-act="next" id="nextBtn">次の標的<kbd>Enter</kbd></button></div>
+  </div>`;
+  if(matchMedia('(pointer:fine)').matches){const nb=$('#nextBtn');if(nb)nb.focus({preventScroll:true});}
+}
+function renderSess(){
+  const el=$('#sess');
+  if(!sess.n){el.innerHTML=`<span>収録 <b>${Q.length}</b>問</span><span>この条件で <b>${poolIds().length}</b>問</span>`;return;}
+  el.innerHTML=`<span>今回 <b>${sess.n}</b>問</span><span>命中 <b>${sess.perfect}</b></span><span>平均近さ <b>${Math.round(sess.sum/sess.n)}</b></span><span>平均 <b>${(sess.sec/sess.n).toFixed(1)}</b>秒</span><span>スコア <b>${sess.score}</b></span>`;
+}
+setInterval(()=>{if(cur&&!cur.done&&curView==='quiz'){const t=$('#tnum');if(t)t.textContent=((performance.now()-cur.t0)/1000).toFixed(1);}},100);
+
+/* ===================== 復習・ランキング ===================== */
+let revSubj='all',rankSubj='all';
+function subjChips(id,curv,act){$(id).innerHTML=['all',...SUBJ].map(s=>`<button class="chip${curv===s?' on':''}" data-act="${act}" data-v="${s}">${s==='all'?'全科目':s}</button>`).join('');}
+function itemHTML(q,st,rank,ops){
+  const miss=st&&st.n?Math.round(100-st.s/st.n):null;
+  return `<li class="item">${rank!=null?`<span class="rk${rank<=3?' top':''}">${rank}</span>`:'<span></span>'}
+  <div style="min-width:0"><div class="p">${esc(ab(q.p))}</div>
+  <div class="meta"><span>${esc(q.s)}・${esc(q.law)}</span><span>正解 <b>${fmtA(q.a)}</b></span>${st?`<span>前回 ${esc(laFmt(st.la))}</span><span>${st.n}回・平均${(st.t/st.n).toFixed(1)}秒</span>`:''}${miss!=null?`<span>外れ度 <b>${miss}</b></span>`:''}</div>
+  ${miss!=null?`<div class="mbar"><i style="width:${miss}%"></i></div>`:''}</div>
+  <div class="ops">${ops}</div></li>`;
+}
+function renderReview(){
+  subjChips('#revSubj',revSubj,'revSubj');
+  const ids=revIds().sort((a,b)=>S.rv[b]-S.rv[a]);
+  const list=ids.map(id=>IDX.get(id)).filter(q=>q&&(revSubj==='all'||q.s===revSubj));
+  $('#revCount').textContent=`${ids.length}問`;
+  $('#revList').innerHTML=list.length?list.map(q=>itemHTML(q,S.stats[q.id],null,`<button class="btn sm pri" data-act="tryOne" data-id="${q.id}">挑戦</button><button class="btn sm ghost" data-act="unrev" data-id="${q.id}">外す</button>`)).join('')
+    :`<li class="muted">復習が必要な問題はありません。出題画面で解くと、大外れの問題がここに集まります。</li>`;
+}
+function rankData(subj){
+  return Object.entries(S.stats).map(([id,st])=>({q:IDX.get(id),st})).filter(x=>x.q&&x.st.n>0&&(subj==='all'||x.q.s===subj))
+    .map(x=>({...x,miss:100-x.st.s/x.st.n})).filter(x=>x.miss>0).sort((a,b)=>b.miss-a.miss||b.st.n-a.st.n);
+}
+function renderRank(){
+  const rows=SUBJ.map(s=>{let n=0,sum=0,t=0,p=0,done=0,total=0;for(const q of Q){if(q.s!==s)continue;total++;const st=S.stats[q.id];if(st){done++;n+=st.n;sum+=st.s;t+=st.t;p+=st.p||0;}}return {s,n,avg:n?Math.round(sum/n):null,pr:n?Math.round(p/n*100):null,t:n?(t/n).toFixed(1):null,done,total};});
+  $('#subjTable').innerHTML=`<table><thead><tr><th>科目</th><th>解答数</th><th>平均近さ</th><th>命中率</th><th>平均時間</th><th>挑戦済み</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.s}</td><td>${r.n}</td><td class="${r.avg==null?'':r.avg>=80?'hi':r.avg<50?'lo':''}">${r.avg??'—'}</td><td>${r.pr==null?'—':r.pr+'%'}</td><td>${r.t==null?'—':r.t+'秒'}</td><td>${r.done}/${r.total}</td></tr>`).join('')}</tbody></table>`;
+  subjChips('#rankSubj',rankSubj,'rankSubj');
+  const data=rankData(rankSubj).slice(0,50);
+  $('#rankList').innerHTML=data.length?data.map((x,i)=>itemHTML(x.q,x.st,i+1,`<button class="btn sm pri" data-act="tryOne" data-id="${x.q.id}">挑戦</button>`)).join('')
+    :`<li class="muted">まだ外れた問題がありません。出題画面で解くとランキングが作られます。</li>`;
+}
+function updBadge(){const n=revIds().length;$('#revBadge').textContent=n?String(n):'';}
+
+/* ===================== 問題追加 ===================== */
+function fillSelects(){
+  const opts=SUBJ.map(s=>`<option>${s}</option>`).join('');
+  $('#fSubj').innerHTML=opts;$('#pSubj').innerHTML=opts;
+  $('#fType').innerHTML=TYPES.map(t=>`<option value="${t}">${TL[t]}</option>`).join('');
+  fillLaw();
+}
+function fillLaw(){const s=$('#fSubj').value;$('#fLaw').innerHTML=LAWS_BY_SUBJ[s].map(l=>`<option>${l}</option>`).join('')+'<option value="__other">その他…</option>';$('#fLawOtherWrap').hidden=true;}
+function newId(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function addItems(items){for(const it of items)S.custom.push(it);rebuild();bag=[];touch();renderMyList();}
+function makeItem(s,law,ty,p,a,n,src){const t=Date.now();return {id:newId(),s,law,ty,p,a:aCode(a),n:n||'',alt:'',src,ts:t,m:t};}
+function addOne(){
+  const s=$('#fSubj').value;let law=$('#fLaw').value;if(law==='__other')law=$('#fLawOther').value.trim()||DEF_LAW[s];
+  const p=$('#fP').value.trim();const art=parseArt($('#fArt').value);
+  const k=+toHalf($('#fK').value)||0,g=+toHalf($('#fG').value)||0;
+  if(!p){toast('問題文を入力してください',true);return;}
+  if(!art){toast('条の番号を正しく入力してください（例：94、37の2）',true);return;}
+  addItems([makeItem(s,law,$('#fType').value,p,{...art,k,g},$('#fN').value.trim(),'user')]);
+  ['#fP','#fArt','#fK','#fG','#fN'].forEach(x=>$(x).value='');
+  toast(`追加しました：${law} ${fmtA({...art,k,g})}`);
+}
+function addBulk(){
+  const lines=$('#bulk').value.split(/\r?\n/);const ok=[],bad=[];
+  lines.forEach((ln,i)=>{
+    if(!ln.trim())return;
+    const c=ln.split(/\t|\|/).map(x=>x.trim());
+    const [s,law,ty,p,a,n]=c;
+    const subj=SUBJ.includes(s)?s:null;const ans=parseLoose(a);
+    if(!subj||!p||!ans){bad.push(i+1);return;}
+    ok.push(makeItem(subj,law||DEF_LAW[subj],TYPES.includes(ty)?ty:'KW',p,ans,n,'user'));
+  });
+  if(ok.length)addItems(ok);
+  $('#bulkMsg').textContent=`${ok.length}件追加${bad.length?`、${bad.length}件は読めませんでした（${bad.slice(0,8).join('・')}行目）`:''}`;
+  if(ok.length&&!bad.length)$('#bulk').value='';
+}
+function renderMyList(){
+  const mine=S.custom.filter(c=>!(S.del[c.id]>=(c.m||c.ts||0))).map(normCustom).filter(Boolean).reverse();
+  $('#myCount').textContent=mine.length?`${mine.length}問。出題画面に自動で混ざります。`:'まだありません。';
+  $('#myList').innerHTML=mine.slice(0,200).map(q=>itemHTML(q,S.stats[q.id],null,`<span class="tag ${q.src==='ai'?'u':''}">${q.src==='ai'?'AI抽出':'自作'}</span><button class="btn sm ghost" data-act="tryOne" data-id="${q.id}">挑戦</button><button class="btn sm danger" data-act="delItem" data-id="${q.id}" data-confirm="もう一度で削除">削除</button>`)).join('');
+}
+function delItem(id){
+  S.custom=S.custom.filter(c=>c.id!==id);S.del[id]=Date.now();delete S.stats[id];if(S.rv[id]!==undefined)setRev(id,false);
+  rebuild();bag=[];touch();updBadge();renderMyList();toast('削除しました');
+}
+function aiPrompt(subj,n){
+  return `あなたは日本の司法試験・予備試験の受験指導者です。この後に貼り付けるテキスト（科目：${subj}）を読み、答案で引用すべき条文につながる「基本用語・論点・罪名・手続名・典型的なトリガーキーワード」を最大${n}個抽出し、対応する条文番号を示してください。
+条件：
+- 現行法の条文番号で答える。枝番は「37の2」の形。
+- 条文番号に確信が持てない項目は出力しない。
+- 当事者名に依存しない一般的な表現、または60字以内の短い事例にする。
+- 出力は次の形式の行だけ（説明文やコードブロックは不要）。1行1問。
+${subj}|法令名|種別|問題文|条,項,号|一言解説
+- 種別は「用語・論点・罪名・手続・KW・事例」のどれか。項・号がなければ空欄（例：709,,）。
+例：${subj}|${DEF_LAW[subj]}|論点|（キーワード）|94,2,|（40字以内の解説）
+テキスト：
+`;
+}
+
+/* ---- アプリ内AI抽出（Claudeのプレビュー画面でのみ） ---- */
+let AIRES=[],SAMPLE=null;
+async function aiRun(){
+  if(!SAMPLE)return;
+  const text=$('#aiText').value.trim();const subj=$('#pSubj').value;const n=+$('#aiN').value||10;
+  if(text.length<15){$('#aiMsg').textContent='問題文を貼り付けてください';return;}
+  const btn=$('#aiBtn');btn.disabled=true;$('#aiMsg').textContent='抽出しています…';$('#aiRes').innerHTML='';
+  const prompt=`あなたは日本の司法試験・予備試験の受験指導者です。次のテキスト（科目：${subj}）から、答案で引用すべき条文につながる用語・論点・罪名・手続名・トリガーキーワードを最大${n}個抽出し、現行法の条文番号を示してください。確信が持てない項目は出力しないこと。
+出力はJSON配列のみ：[{"law":"法令名","type":"用語|論点|罪名|手続|KW|事例","prompt":"出題文（60字以内）","art":"条番号（枝番は37の2の形）","k":項（なければ0）,"g":号（なければ0）,"note":"40字以内の解説"}]
+テキスト：
+"""
+${text.slice(0,9000)}
+"""`;
+  try{
+    const res=await SAMPLE.json(prompt,{modelTier:'default'});
+    const arr=Array.isArray(res)?res:(res&&Array.isArray(res.items)?res.items:[]);
+    AIRES=arr.map(x=>{const a=parseArt(x&&x.art);if(!a||!x.prompt)return null;return {law:String(x.law||DEF_LAW[subj]).trim(),ty:TYPES.includes(x.type)?x.type:'KW',p:String(x.prompt).trim(),a:{...a,k:+x.k||0,g:+x.g||0},n:String(x.note||'').trim()};}).filter(Boolean);
+    $('#aiMsg').textContent=AIRES.length?`${AIRES.length}件見つかりました。条文番号を確認して追加してください。`:'抽出できる項目がありませんでした。';
+    renderAiRes(subj);
+  }catch(e){const c=e&&e.code;$('#aiMsg').textContent=c==='not_granted'?'AIの利用が許可されていません。':c==='rate_limited'?'混み合っています。少し待ってから再実行してください。':'抽出に失敗しました。テキストを短くして再実行してください。';}
+  btn.disabled=false;
+}
+function renderAiRes(subj){
+  if(!AIRES.length){$('#aiRes').innerHTML='';return;}
+  $('#aiRes').innerHTML=AIRES.map((x,i)=>`<div class="airow"><input type="checkbox" id="aiC${i}" checked aria-label="この項目を追加">
+    <div class="g"><input class="t w" id="aiP${i}" value="${esc(x.p)}" aria-label="問題文"><input class="t" id="aiL${i}" value="${esc(x.law)}" aria-label="法令"><input class="t" id="aiA${i}" value="${esc(aCode(x.a))}" aria-label="条,項,号"><input class="t w" id="aiN${i}" value="${esc(x.n)}" aria-label="解説" placeholder="解説"></div></div>`).join('')
+    +`<div class="acts"><button class="btn go" data-act="aiAdd" data-subj="${esc(subj)}">チェックした問題を追加</button></div>`;
+}
+function aiAdd(subj){
+  const items=[];let bad=0;
+  AIRES.forEach((x,i)=>{if(!$('#aiC'+i).checked)return;const a=parseLoose($('#aiA'+i).value);const p=$('#aiP'+i).value.trim();if(!a||!p){bad++;return;}items.push(makeItem(subj,$('#aiL'+i).value.trim()||DEF_LAW[subj],x.ty,p,a,$('#aiN'+i).value.trim(),'ai'));});
+  if(items.length)addItems(items);
+  AIRES=[];$('#aiRes').innerHTML='';$('#aiMsg').textContent=`${items.length}件追加しました${bad?`（${bad}件は条文番号が読めず除外）`:''}`;
+}
+
+/* ===================== 同期・設定画面 ===================== */
+function renderData(){
+  $('#sRepo').value=S.sync.repo;$('#sTok').value=S.sync.token;$('#sAuto').checked=!!S.sync.auto;
+  $('#syncOffBtn').hidden=!S.sync.repo;$('#artNote').hidden=!IN_ARTIFACT;
+  $('#setAbbr').checked=!!S.settings.abbr;$('#setAnim').checked=!!S.settings.anim;$('#setPencil').checked=!!S.settings.pencil;
+  $('#exportBox').value=JSON.stringify({app:'jobun-sniper',v:1,exported:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del});
+  $('#verInfo').textContent=`条文スナイパー ${VERSION}・収録${BANK.length}問＋追加${Q.length-BANK.length}問`;
+  setSyncStat(S.sync.err?'err':'ok');
+}
+function doImport(){
+  let d;try{d=JSON.parse($('#importBox').value);}catch(e){toast('読み込めませんでした。書き出したテキストをそのまま貼り付けてください',true);return;}
+  if(!d||(d.app!=='jobun-sniper'&&d.app!=='jobunpro')){toast('条文スナイパーのバックアップではありません',true);return;}
+  if(d.review&&!d.rv){d.rv={};for(const [id,t] of Object.entries(d.review))d.rv[id]=t;}
+  const before=S.custom.length;
+  mergeRemote({custom:(d.custom||[]).map(c=>({...c,m:c.m||c.ts||1})),stats:d.stats,rv:d.rv,del:d.del});
+  rebuild();bag=[];touch();updBadge();$('#importBox').value='';
+  toast(`読み込みました（問題${Math.max(0,S.custom.length-before)}件を追加）`);renderData();
+}
+async function syncSave(){
+  if(IN_ARTIFACT){toast('プレビューでは同期できません。GitHub Pages版で設定してください',true,3500);return;}
+  const repo=$('#sRepo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/\/$/,''),tok=$('#sTok').value.trim();
+  if(!repo||!tok){toast('リポジトリ名とトークンを入力してください',true);return;}
+  S.sync.repo=repo;S.sync.token=tok;S.sync.auto=$('#sAuto').checked;S.sync.err='';
+  try{const info=await gh(repoBase());if(!info.private){toast('このリポジトリは公開（Public）です。Privateのリポジトリを指定してください',true,4500);S.sync.err='公開リポジトリは使えません';saveLocal();renderData();return;}}
+  catch(e){S.sync.err=syncErr(e);saveLocal();renderData();setSyncStat('err');toast('接続できません：'+S.sync.err,true,4000);return;}
+  saveLocal();renderData();await syncNow(true);renderData();
+}
+
+/* ===================== 画面切替とイベント ===================== */
+let curView='quiz';
+function show(v){
+  curView=v;
+  document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='v-'+v);
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  refreshCurrentView();window.scrollTo(0,0);
+}
+function refreshCurrentView(){
+  if(curView==='quiz'){if(!cur||(!cur.done&&!IDX.has(cur.q.id)))nextQ();else renderQuiz();}
+  else if(curView==='review')renderReview();
+  else if(curView==='rank')renderRank();
+  else if(curView==='add')renderMyList();
+  else if(curView==='data')renderData();
+}
+function setSetting(k,v){S.settings[k]=v;saveLocal();}
+function armConfirm(btn){
+  if(btn.dataset.armed){delete btn.dataset.armed;return true;}
+  btn.dataset.armed='1';const orig=btn.textContent;btn.textContent=btn.dataset.confirm;
+  setTimeout(()=>{if(btn.isConnected&&btn.dataset.armed){delete btn.dataset.armed;btn.textContent=orig;}},3000);
+  return false;
+}
+function copyText(txt,box){
+  const fb=()=>{if(box){box.focus();box.select();}toast('選択しました。コピーしてください');};
+  try{navigator.clipboard.writeText(txt).then(()=>toast('コピーしました'),fb);}catch(_){fb();}
+}
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('#tabs button');if(tab){show(tab.dataset.view);return;}
+  const segb=e.target.closest('.seg button');
+  if(segb){
+    const k=segb.parentElement.dataset.set;let v=segb.dataset.v;
+    if(k==='toc')v=v==='true';else if(k==='qfs')v=+v;
+    setSetting(k,v);
+    if(k==='toc'||k==='layout'){applyLayout();renderToc();}
+    else if(k==='qfs')applySettings();
+    else if(cur&&!cur.done)renderAns();
+    renderCtrl();return;
+  }
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const act=b.dataset.act;
+  switch(act){
+    case 'subj':setSetting('subj',b.dataset.v);mode={kind:'normal'};bag=[];nextQ();break;
+    case 'type':setSetting('type',b.dataset.v);mode={kind:'normal'};bag=[];nextQ();break;
+    case 'fs':{const v=Math.min(5,Math.max(1,(S.settings.qfs||3)+(+b.dataset.d)));setSetting('qfs',v);applySettings();renderCtrl();break;}
+    case 'dial':if(suppressClick)return;stepDial(+b.dataset.i,+b.dataset.dir);break;
+    case 'dialclr':inp.d=[0,0,0,0];inp.e=0;updDial();break;
+    case 'k':case 'g':{inp[act]=+b.dataset.v;document.querySelectorAll(`#${act}Chips button`).forEach(x=>x.classList.toggle('on',x===b));updPreview();break;}
+    case 'submit':submit(false);break;
+    case 'pass':submit(true);break;
+    case 'next':nextQ();break;
+    case 'togRev':{const id=cur.q.id;setRev(id,!inRev(id));touch();updBadge();renderResult();break;}
+    case 'exitMode':mode={kind:'normal'};bag=[];nextQ();break;
+    case 'startReview':if(!revIds().length){toast('復習リストは空です');return;}mode={kind:'review'};bag=[];cur=null;show('quiz');break;
+    case 'startWeak':{const ids=rankData('all').slice(0,20).map(x=>x.q.id);if(!ids.length){toast('まだ外れた問題がありません');return;}mode={kind:'weak',ids};bag=[];cur=null;show('quiz');break;}
+    case 'tryOne':mode={kind:'single',id:b.dataset.id};bag=[];cur=null;show('quiz');break;
+    case 'unrev':setRev(b.dataset.id,false);touch();updBadge();renderReview();break;
+    case 'revSubj':revSubj=b.dataset.v;renderReview();break;
+    case 'rankSubj':rankSubj=b.dataset.v;renderRank();break;
+    case 'addOne':addOne();break;
+    case 'addBulk':addBulk();break;
+    case 'delItem':if(armConfirm(b))delItem(b.dataset.id);break;
+    case 'copyPrompt':copyText(aiPrompt($('#pSubj').value,10));break;
+    case 'aiRun':aiRun();break;
+    case 'aiAdd':aiAdd(b.dataset.subj);break;
+    case 'copyExport':copyText($('#exportBox').value,$('#exportBox'));break;
+    case 'doImport':doImport();break;
+    case 'resetStats':if(armConfirm(b)){S.stats={};for(const id of Object.keys(S.rv))if(inRev(id))setRev(id,false);touch();updBadge();sess={n:0,perfect:0,sum:0,sec:0,score:0};b.textContent='成績をリセット';toast('成績を消去しました');}break;
+    case 'syncBtn':if(!syncReady()||IN_ARTIFACT){show('data');}else syncNow(true);break;
+    case 'syncNow':syncNow(true);break;
+    case 'syncSave':syncSave();break;
+    case 'syncOff':if(armConfirm(b)){S.sync={...DEF_SYNC};saveLocal();renderData();toast('この端末の同期をやめました');b.textContent='同期をやめる';}break;
+  }
+});
+document.addEventListener('input',e=>{if(e.target.matches('#tArt,#tK,#tG'))updPreview();});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='fSubj')fillLaw();
+  else if(t.id==='fLaw')$('#fLawOtherWrap').hidden=t.value!=='__other';
+  else if(t.id==='sAuto'){S.sync.auto=t.checked;saveLocal();}
+  else if(t.id==='setAbbr'){setSetting('abbr',t.checked);}
+  else if(t.id==='setAnim'){setSetting('anim',t.checked);}
+  else if(t.id==='setPencil'){setSetting('pencil',t.checked);}
+});
+document.addEventListener('keydown',e=>{
+  if(curView!=='quiz')return;
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(e.key==='Enter'){
+    if(tag==='textarea'||tag==='select'||e.isComposing)return;
+    if(e.target.closest&&e.target.closest('.ctrl'))return;
+    if(!cur)return;e.preventDefault();
+    if(cur.done)nextQ();else submit(false);return;
+  }
+  if(tag==='input'||tag==='textarea'||tag==='select')return;
+  if(cur&&!cur.done&&S.settings.artMode==='dial'){
+    if(/^[0-9]$/.test(e.key)){inp.d=[inp.d[1],inp.d[2],inp.d[3],+e.key];updDial();e.preventDefault();}
+    else if(e.key==='Backspace'){inp.d=[0,inp.d[0],inp.d[1],inp.d[2]];updDial();e.preventDefault();}
+  }
+});
+
+/* ===================== 起動 ===================== */
+(function init(){
+  if(/^https?:$/.test(location.protocol)&&!IN_ARTIFACT){
+    const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
+    if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+  fillSelects();updBadge();
+  show('quiz');setSyncStat(S.sync.err?'err':'ok');
+  if(window.claude&&typeof window.claude.use==='function'){window.claude.use('sample').then(s=>{SAMPLE=s;$('#aiArea').hidden=!s;}).catch(()=>{});}
+  if(syncReady()&&S.sync.auto&&!IN_ARTIFACT)setTimeout(()=>syncNow(false),800);
+})();
+</script>
+
+</body>
+</html>
