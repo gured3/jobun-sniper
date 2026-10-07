@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="条文スナイパー">
-<meta name="theme-color" content="#0b1222">
+<meta name="theme-color" content="#ffffff">
 <meta name="format-detection" content="telephone=no">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
@@ -19,94 +19,92 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&display=swap" rel="stylesheet">
 <style>
-/* Layout: sticky noir header; quiz stage = question → dial → TOC (縦) or [question/dial | tall TOC] (横). Single dark theme by request. */
+/* Layout: white header with the logo wordmark; quiz stage = question → dial → TOC (縦) or [question/dial | tall TOC] (横).
+   Palette follows the logo: ice-white ground, deep navy ink, electric blue + cyan glow. Single light theme by design. */
 :root{
-  --bg:#070b15;
-  --bg2:#0b1222;
-  --surface:#101a2e;
-  --surface2:#16233d;
-  --raise:#1d2d4d;
-  --line:#26385a;
-  --fg:#eef3fb;
-  --muted:#94a5c4;
-  --dim:#5b6c8c;
-  --cyan:#41b6ff;
-  --cyan-ink:#03182b;
-  --green:#3fe0a2;
-  --green-ink:#03281b;
-  --gold:#f2c14f;
-  --gold-ink:#2b1d02;
-  --bad:#ff5d6c;
+  --bg:#eef4fc;
+  --bg2:#ffffff;
+  --surface:#ffffff;
+  --surface2:#e9f1fc;
+  --raise:#dbe8fa;
+  --line:#c9d8ee;
+  --fg:#0a1f4f;
+  --muted:#4c5f84;
+  --dim:#8b9bb9;
+  --navy:#0a2463;
+  --blue:#1570ff;
+  --blue-d:#0b4fc4;
+  --cyan:#12b3ff;
+  --ok:#0e9f7a;
+  --bad:#e23c55;
   --f-disp:"Dela Gothic One","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;
   --f-num:"Bebas Neue","DIN Condensed","Arial Narrow",sans-serif;
   --f-body:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Meiryo",system-ui,sans-serif;
   --qfs:26px;
   --r:14px;
-  color-scheme:dark;
+  color-scheme:light;
 }
 *{box-sizing:border-box;transition:none!important}
 [hidden]{display:none!important}
-html,body{background:var(--bg);color:var(--fg);margin:0}
-body{font:15px/1.65 var(--f-body);-webkit-text-size-adjust:100%;touch-action:manipulation}
+html,body{margin:0;color:var(--fg);background:var(--bg)}
+body{font:15px/1.65 var(--f-body);-webkit-text-size-adjust:100%;touch-action:manipulation;background:radial-gradient(1100px 380px at 50% -140px,#d6e8ff 0%,rgba(214,232,255,0) 70%),var(--bg)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-h1,h2,h3{font-family:var(--f-disp);font-weight:400;margin:0;text-wrap:balance;line-height:1.35;letter-spacing:.02em}
-kbd{font:600 11px var(--f-body);padding:1px 6px;border-radius:6px;background:rgba(0,0,0,.2);margin-left:6px}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-disp);font-weight:400;margin:0;text-wrap:balance;line-height:1.35;letter-spacing:.02em;color:var(--navy);font-style:italic}
+kbd{font:700 11px var(--f-body);padding:1px 6px;border-radius:6px;background:rgba(255,255,255,.25);margin-left:6px;font-style:normal}
 
 /* header */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.028) 22px 23px),var(--bg2);border-bottom:2px solid #000;box-shadow:0 1px 0 var(--line)}
-.bar{max-width:1200px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:12px}
-.brand{display:flex;align-items:center;gap:9px;flex:none}
-.brand svg{width:32px;height:32px;flex:none}
-.brand b{font:400 19px var(--f-disp);letter-spacing:.03em;white-space:nowrap}
-.brand b span{color:var(--gold)}
-.tabs{display:flex;gap:4px;margin-left:auto}
-.tabs button{border:0;background:transparent;color:var(--muted);font:700 14px var(--f-body);padding:8px 12px;border-radius:10px;position:relative}
-.tabs button.on{background:var(--surface2);color:var(--fg);box-shadow:inset 0 -2px 0 var(--cyan)}
-.tabs button i{font-style:normal;font:800 11px var(--f-body);background:var(--bad);color:#2b0710;border-radius:9px;padding:0 6px;margin-left:5px;vertical-align:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg2);box-shadow:0 1px 0 var(--line)}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:linear-gradient(90deg,var(--navy) 0%,var(--blue) 45%,var(--cyan) 70%,rgba(18,179,255,0) 100%)}
+.bar{max-width:1200px;margin:0 auto;padding:7px 16px;display:flex;align-items:center;gap:12px}
+.brand{display:block;flex:none;line-height:0}
+.brand img{height:36px;width:auto;display:block}
+.tabs{display:flex;gap:2px;margin-left:auto}
+.tabs button{border:0;background:transparent;color:var(--muted);font:700 14px var(--f-body);padding:9px 12px;border-radius:10px;position:relative}
+.tabs button.on{color:var(--navy);box-shadow:inset 0 -3px 0 var(--blue)}
+.tabs button i{font-style:normal;font:800 11px var(--f-body);background:var(--bad);color:#fff;border-radius:9px;padding:0 6px;margin-left:5px;vertical-align:2px}
 .tabs button i:empty{display:none}
 .tabs .ti{display:none}
-.syncb{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap}
-.syncb.ok{color:var(--green);border-color:#1f6b52}
-.syncb.err{color:var(--bad);border-color:#7a3340}
+.syncb{flex:none;border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap}
+.syncb.ok{color:var(--blue-d);border-color:#9cc2f7;background:#e6f1ff}
+.syncb.err{color:var(--bad);border-color:#f0aab6;background:#fff0f3}
 
-main{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:14px 40px}
+main{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:16px 40px}
 .view{display:flex;flex-direction:column;gap:14px}
 .narrow{max-width:860px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 
 /* generic */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 0 #dbe6f5}
 .muted{color:var(--muted)}
 .small{font-size:13px}
-.btn{border:0;border-radius:12px;padding:10px 16px;font:800 15px var(--f-body);background:var(--surface2);color:var(--fg);box-shadow:0 3px 0 #000;display:inline-flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation}
-.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #000}
-.btn.go{background:var(--gold);color:var(--gold-ink);box-shadow:0 4px 0 #a97c17}
-.btn.go:active{box-shadow:0 1px 0 #a97c17}
-.btn.pri{background:var(--cyan);color:var(--cyan-ink);box-shadow:0 4px 0 #1f73b0}
-.btn.pri:active{box-shadow:0 1px 0 #1f73b0}
-.btn.grn{background:var(--green);color:var(--green-ink);box-shadow:0 4px 0 #1c9468}
-.btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--muted)}
-.btn.danger{background:transparent;border:1px solid #7a3340;box-shadow:none;color:var(--bad)}
+.btn{border:1px solid var(--line);border-radius:12px;padding:10px 16px;font:800 15px var(--f-body);background:linear-gradient(180deg,#fff,#eef4fd);color:var(--navy);box-shadow:0 3px 0 #b9cbe5;display:inline-flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #b9cbe5}
+.btn.go{border:0;color:#fff;font-style:italic;letter-spacing:.03em;text-shadow:0 1px 0 rgba(0,0,0,.25);background:linear-gradient(180deg,#4aa3ff 0%,#1570ff 52%,#0b4fc4 100%);box-shadow:0 4px 0 var(--navy),0 6px 16px rgba(21,112,255,.28)}
+.btn.go:active{box-shadow:0 1px 0 var(--navy)}
+.btn.pri{border:0;color:#fff;background:linear-gradient(180deg,#1f3f8f,#0a2463);box-shadow:0 4px 0 #050f2e}
+.btn.pri:active{box-shadow:0 1px 0 #050f2e}
+.btn.ghost{background:transparent;box-shadow:none;color:var(--muted)}
+.btn.danger{background:#fff;border-color:#f0aab6;box-shadow:none;color:var(--bad)}
 .btn.sm{padding:6px 11px;font-size:13px;border-radius:10px}
 .btn[disabled]{opacity:.5;cursor:default}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:999px;padding:6px 14px;font:700 14px var(--f-body);white-space:nowrap;touch-action:manipulation}
-.chip.on{background:var(--cyan);border-color:var(--cyan);color:var(--cyan-ink)}
-.chips.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chip{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:6px 14px;font:700 14px var(--f-body);white-space:nowrap;touch-action:manipulation}
+.chip.on{background:linear-gradient(180deg,#2b86ff,#0b4fc4);border-color:#0b4fc4;color:#fff;box-shadow:0 2px 0 var(--navy)}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:3px}
 .chips.scroll::-webkit-scrollbar{display:none}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
-input.t,select.t,textarea.t{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--fg);width:100%;min-width:0;font-size:16px}
+input.t,select.t,textarea.t{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--fg);width:100%;min-width:0;font-size:16px}
 textarea.t{resize:vertical;line-height:1.6}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
 .chk{display:flex;align-items:center;gap:10px;font-size:15px}
-.chk input{width:22px;height:22px;accent-color:var(--cyan)}
+.chk input{width:22px;height:22px;accent-color:var(--blue);flex:none}
 .help{font-size:14px;line-height:1.8}
-.help summary{cursor:pointer;color:var(--cyan);font-weight:700}
+.help summary{cursor:pointer;color:var(--blue-d);font-weight:700}
 .help ol{padding-left:1.3em;margin:6px 0}
-code{background:var(--bg);padding:1px 6px;border-radius:6px;font-size:.92em}
+code{background:var(--surface2);padding:1px 6px;border-radius:6px;font-size:.92em}
 
 /* controls */
 .ctrl{gap:10px}
@@ -115,118 +113,142 @@ code{background:var(--bg);padding:1px 6px;border-radius:6px;font-size:.92em}
 .ctrl details summary::before{content:"▸";font-size:11px}
 .ctrl details[open] summary::before{content:"▾"}
 .ctrl .inner{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-.seg{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface2)}
+.seg{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
 .seg span{font-size:12px;color:var(--muted);padding:0 10px;white-space:nowrap}
 .seg button{border:0;background:transparent;color:var(--muted);padding:7px 11px;font:700 13px var(--f-body);border-left:1px solid var(--line);white-space:nowrap}
-.seg button.on{background:var(--green);color:var(--green-ink)}
+.seg button.on{background:var(--navy);color:#fff}
 .segs{display:flex;flex-wrap:wrap;gap:8px}
-.modebar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#123a33;border:1px solid #1f6b52;color:var(--green);border-radius:12px;padding:8px 12px;font-weight:700}
+.modebar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#e6f1ff;border:1px solid #9cc2f7;color:var(--blue-d);border-radius:12px;padding:8px 12px;font-weight:700}
 
 /* stage layouts */
 .stage{display:flex;flex-direction:column;gap:14px;max-width:860px;width:100%;margin:0 auto}
 .stage .mainCol{display:flex;flex-direction:column;gap:14px;min-width:0}
-.stage.h{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,310px);align-items:start;max-width:none}
+.stage.h{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,320px);align-items:start;max-width:none}
 .stage.h.notoc{grid-template-columns:minmax(0,1fr);max-width:900px}
-.stage.h .tocCol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);height:calc(100vh - 96px);height:calc(100dvh - 96px)}
+.stage.h .tocCol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);height:calc(100vh - 100px);height:calc(100dvh - 100px)}
 .stage.h .toc{height:100%}
 .stage.h .toc ul{max-height:none}
 
 /* question */
-.qcard{position:relative;background:linear-gradient(180deg,var(--surface),#0d1628);border:1px solid var(--line);border-radius:18px;padding:18px 20px 16px;
-  background-image:
-    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
-    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
-    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
-    linear-gradient(var(--cyan),var(--cyan)),linear-gradient(var(--cyan),var(--cyan)),
-    linear-gradient(180deg,var(--surface),#0d1628);
-  background-size:18px 2px,2px 18px,18px 2px,2px 18px,18px 2px,2px 18px,18px 2px,2px 18px,100% 100%;
-  background-position:8px 8px,8px 8px,calc(100% - 8px) 8px,calc(100% - 8px) 8px,8px calc(100% - 8px),8px calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),0 0;
-  background-repeat:no-repeat}
-.qtags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.qcard{position:relative;border:1px solid var(--line);border-radius:18px;padding:20px 22px 16px;box-shadow:0 3px 0 #d3e1f4,0 10px 26px rgba(10,36,99,.07);
+  background:
+    linear-gradient(var(--blue),var(--blue)) 10px 12px/18px 3px no-repeat,linear-gradient(var(--blue),var(--blue)) 10px 12px/3px 18px no-repeat,
+    linear-gradient(var(--blue),var(--blue)) calc(100% - 10px) 12px/18px 3px no-repeat,linear-gradient(var(--blue),var(--blue)) calc(100% - 10px) 12px/3px 18px no-repeat,
+    linear-gradient(var(--blue),var(--blue)) 10px calc(100% - 10px)/18px 3px no-repeat,linear-gradient(var(--blue),var(--blue)) 10px calc(100% - 10px)/3px 18px no-repeat,
+    linear-gradient(var(--blue),var(--blue)) calc(100% - 10px) calc(100% - 10px)/18px 3px no-repeat,linear-gradient(var(--blue),var(--blue)) calc(100% - 10px) calc(100% - 10px)/3px 18px no-repeat,
+    linear-gradient(90deg,var(--navy),var(--blue) 50%,var(--cyan)) 0 0/100% 5px no-repeat,
+    #fff}
+.qtags{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
 .tag{font:700 12px var(--f-body);border-radius:7px;padding:2px 8px;background:var(--surface2);color:var(--muted)}
-.tag.s{background:var(--cyan);color:var(--cyan-ink)}
-.tag.t{background:#173d36;color:var(--green)}
-.tag.u{background:#3a3218;color:var(--gold)}
+.tag.s{background:var(--navy);color:#fff}
+.tag.t{background:#dff1ff;color:var(--blue-d)}
+.tag.u{background:#fff3d6;color:#8a5a00}
 .qtools{margin-left:auto;display:flex;align-items:center;gap:6px}
-.fsb{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:8px;min-width:38px;height:30px;padding:0 6px;font:800 13px var(--f-body);white-space:nowrap}
-.timer{font:400 30px/1 var(--f-num);letter-spacing:.04em;color:var(--muted);font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
-.timer small{font:700 11px var(--f-body);margin-left:2px}
-.qtext{font:700 var(--qfs)/1.5 var(--f-body);margin:14px 0 6px;overflow-wrap:anywhere}
+.fsb{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;min-width:38px;height:30px;padding:0 6px;font:800 13px var(--f-body);white-space:nowrap}
+.timer{font:400 30px/1 var(--f-num);letter-spacing:.04em;color:var(--blue-d);font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+.timer small{font:700 11px var(--f-body);margin-left:2px;color:var(--muted)}
+.qtext{font:700 var(--qfs)/1.5 var(--f-body);margin:14px 0 6px;overflow-wrap:anywhere;color:var(--navy)}
 .qhint{margin:0;color:var(--muted);font-size:13px}
 .empty{color:var(--muted);margin:6px 0}
 
 /* toc */
-.toc{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;min-height:0}
-.toc h3{font:700 13px var(--f-body);color:var(--muted);margin-bottom:6px}
-.toc ul{list-style:none;margin:0;padding:0;max-height:260px;overflow:auto;display:grid;gap:1px;align-content:start}
+.toc{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;min-height:0;box-shadow:0 2px 0 #dbe6f5}
+.toc h3{font:700 13px var(--f-body);color:var(--muted);margin-bottom:6px;font-style:normal}
+.toc ul{list-style:none;margin:0;padding:0;max-height:280px;overflow:auto;display:grid;gap:1px;align-content:start}
 .toc li{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:3px 6px;border-radius:6px}
-.toc li.l1{font-weight:700;color:var(--fg)}
-.toc li.l2{padding-left:18px;color:var(--muted)}
-.toc li.l3{padding-left:30px;color:var(--dim)}
-.toc li.hit{background:rgba(242,193,79,.14);color:var(--gold)}
-.toc .rng{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--cyan)}
+.toc li.l1{font-weight:800;color:var(--navy)}
+.toc li.l2{padding-left:16px;color:var(--fg)}
+.toc li.l3{padding-left:28px;color:var(--muted)}
+.toc li.l4,.toc li.l5{padding-left:40px;color:var(--dim)}
+.toc li.hit{background:#e3efff;color:var(--blue-d);font-weight:700}
+.toc .rng{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--blue-d)}
 
 /* answer */
-.ans{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.stage{--ww:60px;--dgf:46px;--dgh:52px;--wb:36px;--nb:44px;--nbf:22px;--tif:30px}
+.stage[data-asz="1"]{--ww:48px;--dgf:36px;--dgh:42px;--wb:30px;--nb:36px;--nbf:18px;--tif:22px}
+.stage[data-asz="3"]{--ww:74px;--dgf:58px;--dgh:64px;--wb:44px;--nb:54px;--nbf:27px;--tif:38px}
+.stage[data-asz="4"]{--ww:92px;--dgf:74px;--dgh:80px;--wb:54px;--nb:66px;--nbf:34px;--tif:48px}
+.ans{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 3px 0 #d3e1f4}
+.anshead{display:flex;align-items:center;gap:6px;justify-content:flex-end;margin:-4px 0 -6px}
+.anshead span{font-size:12px;color:var(--dim);margin-right:auto}
 .fld{display:flex;gap:12px;align-items:flex-start}
-.fl{flex:none;width:30px;height:30px;border-radius:9px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font:400 15px var(--f-disp);color:var(--gold);margin-top:2px}
+.fl{flex:none;width:30px;height:30px;border-radius:9px;background:var(--navy);display:grid;place-items:center;font:400 15px var(--f-disp);color:#fff;margin-top:2px}
 .fld>.body{flex:1;min-width:0}
 .dial{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.wheel{display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,#151f33,#0a101d);border:1px solid #31456b;border-radius:14px;width:60px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 3px 0 #000}
-.wheel button{border:0;background:transparent;color:var(--cyan);width:100%;height:36px;font-size:15px;touch-action:none}
-.wheel button:active{background:rgba(65,182,255,.12)}
-.dg{font:400 46px/1 var(--f-num);font-variant-numeric:tabular-nums;height:52px;display:grid;place-items:center;width:100%;border-block:1px solid #31456b;background:#050912;color:var(--fg);padding-top:4px}
-.dg.lz{color:#36486a}
+.wheel{display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,#ffffff,#e2ecf9);border:1px solid #b7cbe8;border-radius:14px;width:var(--ww);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 3px 0 #a9bfdf}
+.wheel button{border:0;background:transparent;color:var(--blue);width:100%;height:var(--wb);font-size:calc(var(--wb) * .42);touch-action:none}
+.wheel button:active{background:rgba(21,112,255,.1)}
+.dg{font:400 var(--dgf)/1 var(--f-num);font-variant-numeric:tabular-nums;height:var(--dgh);display:grid;place-items:center;width:100%;border-block:1px solid #b7cbe8;background:linear-gradient(180deg,#0d2a6e,#0a2463);color:#fff;padding-top:4px;text-shadow:0 0 10px rgba(18,179,255,.55)}
+.dg.lz{color:#5a73a8;text-shadow:none}
 .wl{font-size:10px;color:var(--dim);padding:2px 0 4px}
-.wheel.eda{border-color:#8a6a1e}
-.wheel.eda .dg{color:var(--gold)}
+.wheel.eda{border-color:#7fc9f0}
+.wheel.eda .dg{color:#8fe0ff}
 .jo{font:400 15px var(--f-disp);color:var(--muted);padding:0 2px}
 .dialtools{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}
 .numchips{display:flex;flex-wrap:wrap;gap:6px}
-.numchips button{min-width:44px;height:42px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);color:var(--fg);font:400 22px/1 var(--f-num);padding-top:3px;touch-action:manipulation}
-.numchips button.none{font:700 12px var(--f-body);color:var(--muted);min-width:52px;padding:0}
-.numchips button.on{background:var(--cyan);border-color:var(--cyan);color:var(--cyan-ink)}
+.numchips button{min-width:var(--nb);height:var(--nb);border-radius:11px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#eaf2fd);color:var(--navy);font:400 var(--nbf)/1 var(--f-num);padding-top:3px;touch-action:manipulation;box-shadow:0 2px 0 #c3d4ec}
+.numchips button.none{font:700 12px var(--f-body);color:var(--muted);min-width:calc(var(--nb) + 10px);padding:0}
+.numchips button.on{background:linear-gradient(180deg,#2b86ff,#0b4fc4);border-color:#0b4fc4;color:#fff;box-shadow:0 2px 0 var(--navy)}
 .tin{display:flex;align-items:center;gap:8px}
-.tin input{max-width:180px;font:400 30px var(--f-num);text-align:center;letter-spacing:.04em}
+.tin input{max-width:calc(var(--tif) * 6);font:400 var(--tif) var(--f-num);text-align:center;letter-spacing:.04em;color:var(--navy)}
 .tin .u{font:400 16px var(--f-disp);color:var(--muted)}
 .preview{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:12px;color:var(--muted);font-size:13px}
-.preview b{font:700 24px var(--f-body);color:var(--fg)}
-.ans .acts .btn.go{min-width:170px;font-size:17px}
+.preview b{font:800 24px var(--f-body);color:var(--navy)}
+.ans .acts .btn.go{min-width:180px;font-size:18px}
 .err{color:var(--bad);font-size:13px;margin:0}
 
 /* result */
-.res{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;border-left:6px solid var(--c)}
-.res.v1{--c:var(--gold)} .res.v2{--c:var(--cyan)} .res.v3{--c:var(--green)} .res.v4{--c:var(--bad)}
+.res{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;border-left:6px solid var(--c);box-shadow:0 3px 0 #d3e1f4}
+.res.v1{--c:var(--blue)} .res.v2{--c:var(--cyan)} .res.v3{--c:var(--ok)} .res.v4{--c:var(--bad)}
 .verdict{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.vlabel{font:400 30px var(--f-disp);color:var(--c)}
-.pts{font:400 46px/1 var(--f-num);font-variant-numeric:tabular-nums}
+.vlabel{font:400 32px var(--f-disp);color:var(--c);font-style:italic}
+.vlabel small{font:700 13px var(--f-body);color:var(--muted);margin-left:8px;font-style:normal}
+.pts{font:400 46px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--navy)}
 .pts small{font:700 12px var(--f-body);color:var(--muted);margin-left:4px}
-.meter{height:10px;border-radius:6px;background:var(--bg);overflow:hidden}
+.meter{height:10px;border-radius:6px;background:var(--surface2);overflow:hidden}
 .meter i{display:block;height:100%;background:var(--c)}
 .cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:0}
-.cmp div{background:var(--bg);border-radius:10px;padding:8px 11px}
+.cmp div{background:var(--surface2);border-radius:10px;padding:8px 11px}
 .cmp dt{font-size:11px;color:var(--muted)}
-.cmp dd{margin:0;font:700 19px var(--f-body);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.cmp dd.ok{color:var(--gold)}
-.note{margin:0;font-size:15px;background:var(--bg);border-radius:10px;padding:8px 11px}
-.where{margin:0;font-size:13px;color:var(--muted)}
+.cmp dd{margin:0;font:800 19px var(--f-body);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:var(--navy)}
+.cmp dd.ok{color:var(--blue)}
+.note{margin:0;font-size:15px;background:var(--surface2);border-radius:10px;padding:8px 11px}
+.struct{border:1px solid #bcd5f6;background:linear-gradient(180deg,#f4f9ff,#eaf3ff);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.sh{font:700 12px var(--f-body);color:var(--blue-d);letter-spacing:.06em}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:14px}
+.crumbs i{font-style:normal;color:var(--dim)}
+.crumb{background:#fff;border:1px solid var(--line);border-radius:7px;padding:1px 8px;color:var(--fg)}
+.crumb.law{background:var(--navy);color:#fff;border-color:var(--navy)}
+.crumb.last{border-color:var(--blue);color:var(--blue-d);font-weight:800}
+.struct p{margin:0;font-size:14px}
+.struct p b{color:var(--navy)}
+.roppo{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;display:flex;flex-direction:column;gap:4px}
+.roppo .rl{font-size:15px;line-height:1.7;overflow-wrap:anywhere;margin:0}
+.roppo .rl.head{font-weight:800;color:var(--navy)}
+.roppo .rl.cs{font-size:14px;color:#2b3f6b;background:#f1f6fd;border-radius:6px;padding:2px 8px}
+.roppo .rl.th{font-size:14px;color:#5a3b00;background:#fff6e2;border-radius:6px;padding:2px 8px}
+.roppo .rl.sub{font-size:14px;color:var(--muted)}
+.roppo details summary{cursor:pointer;color:var(--blue-d);font-size:13px;font-weight:700}
 .sess{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px;padding:0 4px;max-width:860px;width:100%;margin:0 auto}
-.sess b{color:var(--fg);font:400 17px var(--f-num);letter-spacing:.03em}
+.sess b{color:var(--navy);font:400 18px var(--f-num);letter-spacing:.03em}
 
-/* effects (only short bursts on near hits) */
+/* effects (short bursts on near hits) */
 #fx{position:fixed;inset:0;pointer-events:none;z-index:60;display:grid;place-items:center}
-#fx .fxw{position:relative;width:240px;height:240px;display:grid;place-items:center}
-#fx svg{position:absolute;inset:0;width:100%;height:100%;animation:fxZoom .85s cubic-bezier(.2,.8,.2,1) both}
-#fx .ring{position:absolute;inset:60px;border-radius:50%;border:4px solid var(--fxc);animation:fxRing .7s ease-out both}
-#fx .txt{position:relative;font:400 54px var(--f-disp);color:var(--fxc);text-shadow:0 4px 0 #000,0 0 24px rgba(0,0,0,.7);animation:fxText .95s ease-out both;white-space:nowrap}
-#fx .txt small{display:block;text-align:center;font:400 22px var(--f-num);letter-spacing:.3em;color:var(--fg)}
-#fx .p{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:2px;background:var(--fxc);animation:fxBurst .8s ease-out both}
-#fx .p:nth-child(3n){background:var(--fg);border-radius:50%}
-#fx .p:nth-child(3n+1){background:var(--cyan)}
-@keyframes fxZoom{0%{transform:scale(1.9) rotate(-40deg);opacity:0}45%{transform:scale(1) rotate(0);opacity:1}80%{opacity:1}100%{transform:scale(.9);opacity:0}}
-@keyframes fxRing{0%{transform:scale(.3);opacity:1}100%{transform:scale(2.4);opacity:0}}
-@keyframes fxText{0%{transform:scale(.3);opacity:0}30%{transform:scale(1.15);opacity:1}45%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
-@keyframes fxBurst{0%{transform:translate(0,0) rotate(0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(220deg) scale(.4);opacity:0}}
+#fx .fxw{position:relative;width:260px;height:260px;display:grid;place-items:center}
+#fx svg{position:absolute;inset:0;width:100%;height:100%;animation:fxZoom .9s cubic-bezier(.2,.8,.2,1) both;filter:drop-shadow(0 0 10px rgba(18,179,255,.8))}
+#fx .ring{position:absolute;inset:70px;border-radius:50%;border:5px solid var(--fxc);animation:fxRing .75s ease-out both;box-shadow:0 0 24px var(--fxc)}
+#fx .flash{position:absolute;inset:-40vmax;background:radial-gradient(circle,rgba(255,255,255,.85) 0,rgba(255,255,255,0) 40%);animation:fxFlash .5s ease-out both}
+#fx .txt{position:relative;font:400 72px var(--f-disp);font-style:italic;color:var(--navy);-webkit-text-stroke:2px #fff;text-shadow:0 0 18px rgba(18,179,255,.95),0 0 40px rgba(21,112,255,.6),0 5px 0 #fff;animation:fxText 1s ease-out both;white-space:nowrap}
+#fx .txt small{display:block;text-align:center;font:400 22px var(--f-num);letter-spacing:.35em;color:var(--blue-d);-webkit-text-stroke:0;text-shadow:0 0 8px #fff;font-style:normal}
+#fx .txt.graze{font-size:54px;color:#0a4fa8}
+#fx .p{position:absolute;left:50%;top:50%;width:11px;height:11px;margin:-5px;border-radius:2px;background:var(--blue);animation:fxBurst .85s ease-out both}
+#fx .p:nth-child(3n){background:var(--cyan);border-radius:50%}
+#fx .p:nth-child(3n+1){background:var(--navy)}
+@keyframes fxZoom{0%{transform:scale(2) rotate(-45deg);opacity:0}45%{transform:scale(1) rotate(0);opacity:1}80%{opacity:1}100%{transform:scale(.92);opacity:0}}
+@keyframes fxRing{0%{transform:scale(.3);opacity:1}100%{transform:scale(2.6);opacity:0}}
+@keyframes fxFlash{0%{opacity:.9}100%{opacity:0}}
+@keyframes fxText{0%{transform:scale(.3) skewX(-10deg);opacity:0}30%{transform:scale(1.18) skewX(-10deg);opacity:1}45%{transform:scale(1) skewX(-10deg)}80%{opacity:1}100%{opacity:0;transform:translateY(-12px) skewX(-10deg)}}
+@keyframes fxBurst{0%{transform:translate(0,0) rotate(0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(240deg) scale(.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){#fx{display:none!important}}
 
 /* lists */
@@ -234,36 +256,41 @@ code{background:var(--bg);padding:1px 6px;border-radius:6px;font-size:.92em}
 .vhead p{margin:0;color:var(--muted);font-size:14px}
 .vrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;box-shadow:0 2px 0 #dbe6f5}
 .item .rk{font:400 26px var(--f-num);color:var(--dim);width:30px;text-align:center}
 .item .rk.top{color:var(--bad)}
-.item .p{font-weight:700;overflow-wrap:anywhere}
+.item .p{font-weight:700;overflow-wrap:anywhere;color:var(--navy)}
 .item .meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:3px 12px;margin-top:3px}
-.item .meta b{color:var(--fg)}
+.item .meta b{color:var(--navy)}
 .item .ops{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.mbar{height:6px;border-radius:4px;background:var(--bg);margin-top:6px;overflow:hidden;max-width:260px}
+.mbar{height:6px;border-radius:4px;background:var(--surface2);margin-top:6px;overflow:hidden;max-width:260px}
 .mbar i{display:block;height:100%;background:var(--bad)}
 .tbl{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
 th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
 th{font:700 12px var(--f-body);color:var(--muted)}
 th:first-child,td:first-child{text-align:left}
-td.lo{color:var(--bad)} td.hi{color:var(--green)}
-.airow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;background:var(--bg);border-radius:10px;padding:10px}
+td.lo{color:var(--bad)} td.hi{color:var(--ok)}
+.airow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;background:var(--surface2);border-radius:10px;padding:10px}
 .airow .g{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:6px}
-.airow input[type=checkbox]{width:20px;height:20px;margin-top:8px;accent-color:var(--green)}
-.code{font:12px/1.5 ui-monospace,Consolas,monospace;color:var(--muted);background:var(--bg);border-radius:8px;padding:8px 10px;overflow-x:auto;white-space:pre}
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--green);color:var(--green-ink);font:800 14px var(--f-body);padding:9px 18px;border-radius:12px;z-index:70;box-shadow:0 4px 0 #1c9468;max-width:calc(100% - 32px)}
-#toast.bad{background:var(--bad);color:#2b0710;box-shadow:0 4px 0 #a33a45}
+.airow input[type=checkbox]{width:20px;height:20px;margin-top:8px;accent-color:var(--blue)}
+.code{font:12px/1.5 ui-monospace,Consolas,monospace;color:var(--muted);background:var(--surface2);border-radius:8px;padding:8px 10px;overflow-x:auto;white-space:pre}
+.rrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--surface2);border-radius:10px;padding:8px 10px;font-size:14px}
+.rrow b{color:var(--navy)}
+.rrow .sp{margin-left:auto;display:flex;gap:6px;align-items:center}
+.biglogo{display:block;width:min(100%,420px);height:auto;margin:0 auto;border-radius:20px;background:#fff;box-shadow:0 3px 0 #d3e1f4,0 12px 30px rgba(10,36,99,.10)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--navy);color:#fff;font:800 14px var(--f-body);padding:9px 18px;border-radius:12px;z-index:70;box-shadow:0 4px 0 #050f2e;max-width:calc(100% - 32px)}
+#toast.bad{background:var(--bad);box-shadow:0 4px 0 #9c2236}
 
 @media (max-width:760px){
-  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0;background:var(--bg2);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0;background:#fff;border-top:3px solid transparent;border-image:linear-gradient(90deg,var(--navy),var(--blue),var(--cyan)) 1;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
   .tabs button{padding:6px 2px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:1px}
-  .tabs button.on{box-shadow:inset 0 2px 0 var(--cyan)}
+  .tabs button.on{box-shadow:none;color:var(--blue-d);background:#e6f1ff}
   .tabs .ti{display:block;font-size:17px;line-height:1.2}
   .tabs button i{position:absolute;top:2px;right:8px;margin:0}
   .syncb{margin-left:auto}
-  main{padding-block:12px 96px}
+  .brand img{height:30px}
+  main{padding-block:14px 96px}
   #toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   .item{grid-template-columns:auto minmax(0,1fr)}
   .item .ops{grid-column:1/-1;justify-content:flex-start}
@@ -272,16 +299,17 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
   .ans .acts .btn{flex:1}
   .stage.h .tocCol{height:calc(100vh - 170px);height:calc(100dvh - 170px)}
 }
-@media (max-width:480px){.fld{flex-direction:column;gap:6px}.wheel{width:52px}.dg{font-size:40px;height:48px}.dial{gap:5px}.qcard{padding:16px}}
-@media (max-width:360px){.wheel{width:46px}.dg{font-size:34px}}
+@media (max-width:480px){
+  .fld{flex-direction:column;gap:6px}
+  .stage[data-asz="2"]{--ww:52px;--dgf:40px;--dgh:48px}
+  .qcard{padding:18px 16px 14px}
+  .brand img{height:26px}
+}
 </style>
 
 <header class="top">
   <div class="bar">
-    <div class="brand">
-      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="none" stroke="#41b6ff" stroke-width="2.5"/><circle cx="20" cy="20" r="7" fill="none" stroke="#41b6ff" stroke-width="1.5" opacity=".6"/><path d="M20 1v10M20 29v10M1 20h10M29 20h10" stroke="#41b6ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="20" cy="20" r="3" fill="#f2c14f"/></svg>
-      <b>条文<span>スナイパー</span></b>
-    </div>
+    <a class="brand" href="#" data-act="home" aria-label="条文スナイパー"><img src="logo-wordmark.jpg" alt="条文スナイパー" width="527" height="120"></a>
     <nav class="tabs" id="tabs">
       <button data-view="quiz" class="on"><span class="ti">◎</span>出題</button>
       <button data-view="review"><span class="ti">↻</span>復習<i id="revBadge"></i></button>
@@ -299,7 +327,7 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
     <div class="card ctrl">
       <div class="chips scroll" id="subjChips"></div>
       <details id="ctrlMore">
-        <summary>出題設定（種別・配置・文字・入力方式）</summary>
+        <summary>出題設定（種別・配置・文字・入力枠・入力方式）</summary>
         <div class="inner">
           <div class="chips" id="typeChips"></div>
           <div class="segs" id="segs"></div>
@@ -321,7 +349,7 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
   <section class="view" id="v-review" hidden><div class="narrow">
     <div class="vhead">
       <h2>復習リスト</h2>
-      <p>近さ40点未満（大外れ）と「見送る」にした問題が自動で入ります。命中（完全一致）で外れます。</p>
+      <p>近さ40点未満（大外れ）と「見送る」にした問題が自動で入ります。合格（85点以上）で外れます。</p>
     </div>
     <div class="vrow"><button class="btn go" data-act="startReview">復習モードで出題</button><span class="muted small" id="revCount"></span></div>
     <div class="chips scroll" id="revSubj"></div>
@@ -363,7 +391,7 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
 
     <div class="card">
       <h2>一括追加</h2>
-      <p class="muted small" style="margin:0">1行に1問。<b>科目|法令|種別|問題文|条,項,号|解説</b> の順に「|」かタブで区切ります。条は「94,2,」「37の2,1,」「94条2項」のどれでも可。Excelからの貼り付けも可。</p>
+      <p class="muted small" style="margin:0">1行に1問。<b>科目|法令|種別|問題文|条,項,号|解説</b> の順に「|」かタブで区切ります。条は「94,2,」「37の2,1,」「94条2項」「94②」のどれでも可。Excelからの貼り付けも可。</p>
       <div class="code">民法|民法|論点|賃貸人たる地位の移転と敷金の承継|605の2,4,|敷金返還債務も承継
 刑法|刑法|罪名|強制執行妨害目的財産損壊等罪|96の2,,|
 行政法|行政不服審査法|用語|審査請求期間（3か月）|18,1,|</div>
@@ -373,7 +401,7 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
 
     <div class="card">
       <h2>過去問・テキストから問題を作る</h2>
-      <p class="muted small" style="margin:0">下のボタンで指示文をコピーし、Claudeとのチャットに<b>指示文＋問題文（司法試験・予備試験・法科大学院入試の論文問題や自作テキスト）</b>を貼り付けて送ります。返ってきた行を、そのまま上の「一括追加」に貼り付けてください。<b>条文番号はAIの推定</b>なので、六法で確認してから追加してください。</p>
+      <p class="muted small" style="margin:0">指示文をコピーし、Claudeとのチャットに<b>指示文＋問題文（司法試験・予備試験・法科大学院入試の論文問題や自作テキスト）</b>を貼り付けて送ります。返ってきた行を、上の「一括追加」に貼り付けてください。<b>条文番号はAIの推定</b>なので、六法で確認してから追加してください。</p>
       <label class="f">科目<select class="t" id="pSubj"></select></label>
       <div class="acts"><button class="btn pri" data-act="copyPrompt">指示文をコピー</button></div>
       <div id="aiArea" hidden>
@@ -393,14 +421,23 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
 
   <!-- 同期・設定 -->
   <section class="view" id="v-data" hidden><div class="narrow">
+    <img class="biglogo" src="logo-full.jpg" alt="条文スナイパー" width="720" height="516">
+    <div class="card" id="roppoCard">
+      <h2>圧縮六法（ソース）</h2>
+      <p class="muted small" style="margin:0">ご自分の圧縮六法（Word・.docx か .txt）を読み込むと、答え合わせの画面に<b>その条文の内容</b>が出て、目次も教材の「編・章・節・款」に合わせて細かくなります。1台で読み込めば、クラウド同期で他の端末にも届きます。</p>
+      <div id="roppoList" style="display:flex;flex-direction:column;gap:6px"></div>
+      <label class="btn pri" style="align-self:flex-start">ファイルを選ぶ<input type="file" id="roppoFile" accept=".docx,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" multiple hidden></label>
+      <div id="roppoPend" style="display:flex;flex-direction:column;gap:6px"></div>
+      <p class="muted small" id="roppoMsg" style="margin:0"></p>
+    </div>
     <div class="card" id="syncCard">
       <h2>☁ クラウド同期（GitHub）</h2>
-      <p class="muted small" style="margin:0">Windows・iPhone・iPadで、成績・復習リスト・追加した問題を共有します。データはご自分のGitHubの<b>非公開</b>リポジトリに保存されます。論PASSと同じデータ用リポジトリ・トークンを使えます（保存するファイルは別です）。</p>
+      <p class="muted small" style="margin:0">Windows・iPhone・iPadで、成績・復習リスト・追加した問題・圧縮六法を共有します。データはご自分のGitHubの<b>非公開</b>リポジトリに保存されます。論PASSと同じデータ用リポジトリ・トークンを使えます（保存するファイルは別です）。</p>
       <p class="err" id="artNote" hidden>このプレビュー画面ではGitHub同期は使えません。GitHub Pagesに置いた「条文スナイパー」で設定してください。</p>
       <label class="f">データ用リポジトリ（ユーザー名/リポジトリ名）<input class="t" id="sRepo" placeholder="yourname/ronpass-data" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
       <label class="f">アクセストークン<input class="t" id="sTok" type="password" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
       <label class="chk"><input type="checkbox" id="sAuto">自動で同期する（起動時・解答のあと・アプリを閉じるとき）</label>
-      <div class="acts" style="justify-content:flex-start"><button class="btn go" data-act="syncSave">保存して同期</button><button class="btn" data-act="syncNow">今すぐ同期</button><button class="btn danger" data-act="syncOff" id="syncOffBtn">同期をやめる</button></div>
+      <div class="acts" style="justify-content:flex-start"><button class="btn go" data-act="syncSave">保存して同期</button><button class="btn" data-act="syncNow">今すぐ同期</button><button class="btn danger" data-act="syncOff" id="syncOffBtn" data-confirm="もう一度押すと解除します">同期をやめる</button></div>
       <p class="muted small" id="syncInfo" style="margin:0"></p>
       <details class="help"><summary>はじめての設定のしかた</summary><ol>
         <li>GitHubで「New repository」→ 名前を <code>ronpass-data</code> などにし、<b>Private</b> を選び、「Add a README file」にチェックして作成（論PASSで作成済みなら、それを使えます）。<br>※アプリを置く公開リポジトリとは<b>別</b>にしてください。</li>
@@ -413,12 +450,12 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
     <div class="card">
       <h2>表示</h2>
       <label class="chk"><input type="checkbox" id="setAbbr">略語一覧で短く表示する（例：債権者→㋘、94条2項→94②）</label>
-      <label class="chk"><input type="checkbox" id="setAnim">命中・かすりの演出を出す</label>
+      <label class="chk"><input type="checkbox" id="setAnim">合格・惜しいの演出を出す</label>
       <label class="chk"><input type="checkbox" id="setPencil">Apple Pencilでダイアルを回すとき、指のスクロールと区別する</label>
     </div>
     <div class="card">
       <h2>バックアップを書き出す</h2>
-      <p class="muted small" style="margin:0">追加した問題と成績をテキストで書き出します（トークンは含みません）。</p>
+      <p class="muted small" style="margin:0">追加した問題と成績をテキストで書き出します（トークンと圧縮六法は含みません）。</p>
       <textarea class="t" id="exportBox" rows="4" readonly></textarea>
       <div class="acts"><button class="btn pri" data-act="copyExport">コピー</button></div>
     </div>
@@ -429,7 +466,7 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
     </div>
     <div class="card">
       <h2>成績のリセット</h2>
-      <p class="muted small" style="margin:0">解答記録・復習リスト・ランキングを消去します。追加した問題は残ります。</p>
+      <p class="muted small" style="margin:0">解答記録・復習リスト・ランキングを消去します。追加した問題と圧縮六法は残ります。</p>
       <div class="acts"><button class="btn danger" data-act="resetStats" data-confirm="もう一度押すと消去します">成績をリセット</button></div>
     </div>
     <p class="muted small" id="verInfo"></p>
@@ -440,7 +477,7 @@ td.lo{color:var(--bad)} td.hi{color:var(--green)}
 
 <script>
 "use strict";
-const VERSION='2.0';
+const VERSION='2.1';
 /* ===================== 問題バンク =====================
    形式: 種別|問題文|条,項,号|解説|法令(省略時は科目の既定)|別解(;区切り) */
 const SUBJ=['憲法','行政法','民法','商法','民訴','刑法','刑訴'];
@@ -1051,7 +1088,12 @@ KW|財産権の内容は公共の福祉に適合するように法律で定め�
 /* ===================== 目次 ===================== [階層, 見出し, 最初の条, 最後の条] */
 const TOC={
 '憲法':[[1,'第1章 天皇','1','8'],[1,'第2章 戦争の放棄','9','9'],[1,'第3章 国民の権利及び義務','10','40'],[1,'第4章 国会','41','64'],[1,'第5章 内閣','65','75'],[1,'第6章 司法','76','82'],[1,'第7章 財政','83','91'],[1,'第8章 地方自治','92','95'],[1,'第9章 改正','96','96'],[1,'第10章 最高法規','97','99'],[1,'第11章 補則','100','103']],
-'民法':[[1,'第1編 総則','1','174'],[2,'第1章 通則','1','2'],[2,'第2章 人','3','32の2'],[2,'第3章 法人','33','37'],[2,'第4章 物','85','89'],[2,'第5章 法律行為','90','137'],[2,'第6章 期間の計算','138','143'],[2,'第7章 時効','144','174'],[1,'第2編 物権','175','398の22'],[2,'第1章 総則','175','179'],[2,'第2章 占有権','180','205'],[2,'第3章 所有権','206','264の14'],[2,'第4章 地上権','265','269の2'],[2,'第5章 永小作権','270','279'],[2,'第6章 地役権','280','294'],[2,'第7章 留置権','295','302'],[2,'第8章 先取特権','303','341'],[2,'第9章 質権','342','368'],[2,'第10章 抵当権','369','398の22'],[1,'第3編 債権','399','724の2'],[2,'第1章 総則','399','520の20'],[2,'第2章 契約','521','696'],[2,'第3章 事務管理','697','702'],[2,'第4章 不当利得','703','708'],[2,'第5章 不法行為','709','724の2'],[1,'第4編 親族','725','881'],[1,'第5編 相続','882','1050']],
+'民法':[[1,'第1編 総則','1','174'],[2,'第1章 通則','1','2'],[2,'第2章 人','3','32の2'],[3,'第1節 権利能力','3','3'],[3,'第2節 意思能力','3の2','3の2'],[3,'第3節 行為能力','4','21'],[3,'第4節 住所','22','24'],[3,'第5節 不在者の財産の管理及び失踪の宣告','25','32'],[3,'第6節 同時死亡の推定','32の2','32の2'],[2,'第3章 法人','33','37'],[2,'第4章 物','85','89'],[2,'第5章 法律行為','90','137'],[3,'第1節 総則','90','92'],[3,'第2節 意思表示','93','98の2'],[3,'第3節 代理','99','118'],[3,'第4節 無効及び取消し','119','126'],[3,'第5節 条件及び期限','127','137'],[2,'第6章 期間の計算','138','143'],[2,'第7章 時効','144','174'],[3,'第1節 総則','144','161'],[3,'第2節 取得時効','162','165'],[3,'第3節 消滅時効','166','174'],
+[1,'第2編 物権','175','398の22'],[2,'第1章 総則','175','179'],[2,'第2章 占有権','180','205'],[3,'第1節 占有権の取得','180','187'],[3,'第2節 占有権の効力','188','202'],[3,'第3節 占有権の消滅','203','204'],[3,'第4節 準占有','205','205'],[2,'第3章 所有権','206','264の14'],[3,'第1節 所有権の限界','206','238'],[4,'第1款 所有権の内容及び範囲','206','208'],[4,'第2款 相隣関係','209','238'],[3,'第2節 所有権の取得','239','248'],[3,'第3節 共有','249','264'],[3,'第4節 所有者不明土地・建物管理命令','264の2','264の8'],[3,'第5節 管理不全土地・建物管理命令','264の9','264の14'],[2,'第4章 地上権','265','269の2'],[2,'第5章 永小作権','270','279'],[2,'第6章 地役権','280','294'],[2,'第7章 留置権','295','302'],[2,'第8章 先取特権','303','341'],[3,'第1節 総則','303','305'],[3,'第2節 先取特権の種類','306','328'],[3,'第3節 先取特権の順位','329','332'],[3,'第4節 先取特権の効力','333','341'],[2,'第9章 質権','342','368'],[3,'第1節 総則','342','351'],[3,'第2節 動産質','352','355'],[3,'第3節 不動産質','356','361'],[3,'第4節 権利質','362','368'],[2,'第10章 抵当権','369','398の22'],[3,'第1節 総則','369','372'],[3,'第2節 抵当権の効力','373','395'],[3,'第3節 抵当権の消滅','396','398'],[3,'第4節 根抵当','398の2','398の22'],
+[1,'第3編 債権','399','724の2'],[2,'第1章 総則','399','520の20'],[3,'第1節 債権の目的','399','411'],[3,'第2節 債権の効力','412','426'],[4,'第1款 債務不履行の責任等','412','422の2'],[4,'第2款 債権者代位権','423','423の7'],[4,'第3款 詐害行為取消権','424','426'],[3,'第3節 多数当事者の債権及び債務','427','465の10'],[4,'第1款 総則','427','427'],[4,'第2款 不可分債権及び不可分債務','428','431'],[4,'第3款 連帯債権','432','435の2'],[4,'第4款 連帯債務','436','445'],[4,'第5款 保証債務','446','465の10'],[3,'第4節 債権の譲渡','466','469'],[3,'第5節 債務の引受け','470','472の4'],[3,'第6節 債権の消滅','473','520'],[4,'第1款 弁済','473','504'],[4,'第2款 相殺','505','512の2'],[4,'第3款 更改','513','518'],[4,'第4款 免除','519','519'],[4,'第5款 混同','520','520'],[3,'第7節 有価証券','520の2','520の20'],
+[2,'第2章 契約','521','696'],[3,'第1節 総則','521','548の4'],[4,'第1款 契約の成立','521','532'],[4,'第2款 契約の効力','533','539'],[4,'第3款 契約上の地位の移転','539の2','539の2'],[4,'第4款 契約の解除','540','548'],[4,'第5款 定型約款','548の2','548の4'],[3,'第2節 贈与','549','554'],[3,'第3節 売買','555','585'],[4,'第1款 総則','555','559'],[4,'第2款 売買の効力','560','578'],[4,'第3款 買戻し','579','585'],[3,'第4節 交換','586','586'],[3,'第5節 消費貸借','587','592'],[3,'第6節 使用貸借','593','600'],[3,'第7節 賃貸借','601','622の2'],[4,'第1款 総則','601','604'],[4,'第2款 賃貸借の効力','605','616'],[4,'第3款 賃貸借の終了','616の2','622'],[4,'第4款 敷金','622の2','622の2'],[3,'第8節 雇用','623','631'],[3,'第9節 請負','632','642'],[3,'第10節 委任','643','656'],[3,'第11節 寄託','657','666'],[3,'第12節 組合','667','688'],[3,'第13節 終身定期金','689','694'],[3,'第14節 和解','695','696'],[2,'第3章 事務管理','697','702'],[2,'第4章 不当利得','703','708'],[2,'第5章 不法行為','709','724の2'],
+[1,'第4編 親族','725','881'],[2,'第1章 総則','725','730'],[2,'第2章 婚姻','731','771'],[3,'第1節 婚姻の成立','731','749'],[3,'第2節 婚姻の効力','750','754'],[3,'第3節 夫婦財産制','755','762'],[3,'第4節 離婚','763','771'],[2,'第3章 親子','772','817の13'],[3,'第1節 実子','772','791'],[3,'第2節 養子','792','817の11'],[2,'第4章 親権','818','837'],[2,'第5章 後見','838','875'],[2,'第6章 保佐及び補助','876','876の10'],[2,'第7章 扶養','877','881'],
+[1,'第5編 相続','882','1050'],[2,'第1章 総則','882','885'],[2,'第2章 相続人','886','895'],[2,'第3章 相続の効力','896','914'],[2,'第4章 相続の承認及び放棄','915','940'],[2,'第5章 財産分離','941','950'],[2,'第6章 相続人の不存在','951','959'],[2,'第7章 遺言','960','1027'],[2,'第8章 配偶者の居住の権利','1028','1041'],[2,'第9章 遺留分','1042','1049'],[2,'第10章 特別の寄与','1050','1050']],
 '刑法':[[1,'第1編 総則','1','72'],[2,'第1章 通則','1','8'],[2,'第2章 刑','9','21'],[2,'第3章 期間計算','22','24'],[2,'第4章 刑の執行猶予','25','27の7'],[2,'第5章 仮釈放','28','30'],[2,'第6章 刑の時効及び刑の消滅','31','34の2'],[2,'第7章 犯罪の不成立及び刑の減免','35','42'],[2,'第8章 未遂罪','43','44'],[2,'第9章 併合罪','45','55'],[2,'第10章 累犯','56','59'],[2,'第11章 共犯','60','65'],[2,'第12章 酌量減軽','66','67'],[2,'第13章 加重減軽の方法','68','72'],[1,'第2編 罪','77','264'],[2,'公務の執行を妨害する罪','95','96の6'],[2,'逃走の罪','97','102'],[2,'犯人蔵匿及び証拠隠滅の罪','103','105の2'],[2,'放火及び失火の罪','108','118'],[2,'住居を侵す罪','130','132'],[2,'通貨偽造の罪','148','153'],[2,'文書偽造の罪','154','161の2'],[2,'偽証の罪','169','171'],[2,'虚偽告訴の罪','172','173'],[2,'汚職の罪','193','198'],[2,'殺人の罪','199','203'],[2,'傷害の罪','204','208の2'],[2,'過失傷害の罪','209','211'],[2,'遺棄の罪','217','219'],[2,'逮捕及び監禁の罪','220','221'],[2,'脅迫の罪','222','223'],[2,'略取、誘拐及び人身売買の罪','224','229'],[2,'名誉に対する罪','230','232'],[2,'信用及び業務に対する罪','233','234の2'],[2,'窃盗及び強盗の罪','235','245'],[2,'詐欺及び恐喝の罪','246','251'],[2,'横領の罪','252','255'],[2,'盗品等に関する罪','256','257'],[2,'毀棄及び隠匿の罪','258','264']],
 '会社法':[[1,'第1編 総則','1','24'],[1,'第2編 株式会社','25','574'],[2,'第1章 設立','25','103'],[2,'第2章 株式','104','235'],[2,'第3章 新株予約権','236','294'],[2,'第4章 機関','295','430の3'],[3,'株主総会及び種類株主総会','295','325の7'],[3,'役員等の選任及び解任','329','347'],[3,'取締役','348','361'],[3,'取締役会','362','373'],[3,'監査役','381','389'],[3,'役員等の損害賠償責任','423','430'],[2,'第5章 計算等','431','465'],[2,'第6章 定款の変更','466','466'],[2,'第7章 事業の譲渡等','467','470'],[2,'第8章 解散','471','474'],[2,'第9章 清算','475','574'],[1,'第3編 持分会社','575','675'],[1,'第4編 社債','676','742'],[1,'第5編 組織変更・合併・会社分割・株式交換等','743','816の10'],[1,'第6編 外国会社','817','823'],[1,'第7編 雑則','824','959'],[2,'会社の組織に関する訴え','828','846'],[2,'株式会社における責任追及等の訴え','847','853'],[2,'登記','907','938'],[1,'第8編 罰則','960','979']],
 '商法':[[1,'第1編 総則','1','32'],[1,'第2編 商行為','501','683'],[2,'第1章 総則','501','523'],[2,'第2章 売買','524','528'],[1,'第3編 海商','684','850']],
@@ -1095,15 +1137,14 @@ function parseAns(str){
   return {b:a.b,e:a.e,k:+(p[1]||0)||0,g:+(p[2]||0)||0};
 }
 function parseLoose(str){
-  let s=toHalf(String(str||'')).replace(/\s/g,'');
+  const s=toHalf(String(str||'')).replace(/\s/g,'');
   if(!s) return null;
   if(s.includes(',')) return parseAns(s);
-  const ki=KO.indexOf(s.slice(-1));
   const m=s.match(/^第?(\d{1,4})条?(?:(?:の|ノ)(\d{1,2}))?条?(?:第?(\d{1,2})項)?(?:第?(\d{1,2})号)?$/);
   if(m&&+m[1]>0) return {b:+m[1],e:m[2]?+m[2]:0,k:m[3]?+m[3]:0,g:m[4]?+m[4]:0};
   const m2=s.match(/^(\d{1,4})(?:の(\d{1,2}))?([①-⑳])?([❶-❿⓫-⓴])?$/);
   if(m2) return {b:+m2[1],e:m2[2]?+m2[2]:0,k:m2[3]?KO.indexOf(m2[3])+1:0,g:m2[4]?GO.indexOf(m2[4])+1:0};
-  const a=parseArt(s); return a?{...a,k:0,g:0}:(ki>=0?null:null);
+  const a=parseArt(s); return a?{...a,k:0,g:0}:null;
 }
 const artStr=a=>a.b+(a.e?'の'+a.e:'');
 function fmtA(a){
@@ -1113,6 +1154,7 @@ function fmtA(a){
 }
 const aCode=a=>`${artStr(a)},${a.k||''},${a.g||''}`;
 const num=s=>{const a=parseArt(s);return a?a.b+a.e/1000:0};
+const aval=a=>a.b+a.e/1000;
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36);}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1140,16 +1182,17 @@ function normCustom(c){
   const a=parseAns(c.a); if(!a||!c.p) return null;
   return {id:c.id,s:SUBJ.includes(c.s)?c.s:'民法',law:c.law||DEF_LAW[c.s]||'民法',ty:TYPES.includes(c.ty)?c.ty:'KW',p:c.p,a,n:c.n||'',alts:c.alt?String(c.alt).split(';').map(parseAns).filter(Boolean):[],src:c.src||'user'};
 }
+const ALL_LAWS=[...new Set(Object.values(LAWS_BY_SUBJ).flat())];
 
 /* ===================== 状態と保存 ===================== */
 const LS='jsniper.v1';
-const DEF_SET={subj:'all',type:'all',toc:true,artMode:'dial',kgMode:'btn',layout:'auto',qfs:3,abbr:true,anim:true,pencil:false};
+const DEF_SET={subj:'all',type:'all',toc:true,artMode:'dial',kgMode:'btn',layout:'auto',qfs:3,asz:2,abbr:true,anim:true,pencil:false};
 const DEF_SYNC={repo:'',token:'',auto:true,last:0,err:'',pushed:0};
-let S={custom:[],stats:{},rv:{},del:{},settings:{...DEF_SET},sync:{...DEF_SYNC},chg:0};
+let S={custom:[],stats:{},rv:{},del:{},rmeta:{},settings:{...DEF_SET},sync:{...DEF_SYNC},chg:0};
 (function load(){
   try{
     const raw=localStorage.getItem(LS);
-    if(raw){const d=JSON.parse(raw);S={...S,...d,settings:{...DEF_SET,...(d.settings||{})},sync:{...DEF_SYNC,...(d.sync||{})}};return;}
+    if(raw){const d=JSON.parse(raw);S={...S,...d,rmeta:d.rmeta||{},settings:{...DEF_SET,...(d.settings||{})},sync:{...DEF_SYNC,...(d.sync||{})}};return;}
     const old=localStorage.getItem('jobunpro.v1');
     if(old){const d=JSON.parse(old);S.custom=(d.custom||[]).map(c=>({...c,m:c.m||c.ts||Date.now()}));S.stats=d.stats||{};S.del=d.del||{};for(const [id,t] of Object.entries(d.review||{}))S.rv[id]=t;S.settings={...DEF_SET,...(d.settings||{})};}
   }catch(e){}
@@ -1166,6 +1209,104 @@ function rebuild(){
   Q=[...BANK,...custom];IDX=new Map(Q.map(q=>[q.id,q]));
 }
 rebuild();
+
+/* ===================== 圧縮六法（ソース）：読み込み・保存 ===================== */
+const ROPPO={};
+const RDB={db:null,
+  open(){if(this.db)return Promise.resolve(this.db);return new Promise((res,rej)=>{let r;try{r=indexedDB.open('jsniper',1);}catch(e){rej(e);return;}r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('roppo'))r.result.createObjectStore('roppo');};r.onsuccess=()=>{this.db=r.result;res(this.db);};r.onerror=()=>rej(r.error);});},
+  async tx(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('roppo',mode);const st=t.objectStore('roppo');let out;const q=fn(st);if(q)q.onsuccess=()=>{out=q.result;};t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);});},
+  put(k,v){return this.tx('readwrite',s=>s.put(v,k));},
+  del(k){return this.tx('readwrite',s=>s.delete(k));},
+  async all(){const db=await this.open();return new Promise((res,rej)=>{const out={};const t=db.transaction('roppo','readonly');const c=t.objectStore('roppo').openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue();}};t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);});}
+};
+async function loadRoppo(){try{Object.assign(ROPPO,await RDB.all());}catch(e){}}
+const LAW_SLUG={憲法:'kenpo',民法:'minpo',会社法:'kaisha',商法:'shoho',民事訴訟法:'minso',刑法:'keiho',刑事訴訟法:'keiso',行政事件訴訟法:'gyoso',行政手続法:'gyote',国家賠償法:'kokubai',行政不服審査法:'gyofuku',地方自治法:'chiji',警察官職務執行法:'keishoku',借地借家法:'shakuchi',民事執行法:'minshikko',民事保全法:'minhozen'};
+const lawFile=law=>'jobun-sniper/roppo-'+(LAW_SLUG[law]||('x'+hash(law)))+'.json';
+function guessLaw(name){
+  if(/民事訴訟/.test(name))return '民事訴訟法';if(/刑事訴訟/.test(name))return '刑事訴訟法';
+  if(/会社法|商法/.test(name))return '会社法';if(/憲法/.test(name))return '憲法';
+  if(/行政事件訴訟|行訴/.test(name))return '行政事件訴訟法';if(/行政手続/.test(name))return '行政手続法';if(/国家賠償|国賠/.test(name))return '国家賠償法';
+  if(/刑法/.test(name))return '刑法';if(/民法/.test(name))return '民法';return '';
+}
+async function unzipEntry(buf,want){
+  const dv=new DataView(buf);let eocd=-1;
+  for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-65557);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}}
+  if(eocd<0)throw new Error('Wordファイル（.docx）として読めませんでした');
+  const cnt=dv.getUint16(eocd+10,true);let p=dv.getUint32(eocd+16,true);const td=new TextDecoder();
+  for(let n=0;n<cnt;n++){
+    if(dv.getUint32(p,true)!==0x02014b50)break;
+    const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nlen=dv.getUint16(p+28,true),xlen=dv.getUint16(p+30,true),clen=dv.getUint16(p+32,true),lho=dv.getUint32(p+42,true);
+    const name=td.decode(new Uint8Array(buf,p+46,nlen));
+    if(name===want){
+      const start=lho+30+dv.getUint16(lho+26,true)+dv.getUint16(lho+28,true);
+      const data=new Uint8Array(buf,start,csize);
+      if(method===0)return td.decode(data);
+      if(method===8){
+        if(typeof DecompressionStream==='undefined')throw new Error('この端末のブラウザは.docxの読み込みに未対応です。パソコンで読み込んでください（同期で届きます）');
+        return await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+      }
+      throw new Error('圧縮形式に未対応です');
+    }
+    p+=46+nlen+xlen+clen;
+  }
+  throw new Error('Wordの本文が見つかりませんでした');
+}
+function decodeXml(s){return s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g,(m,n)=>String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi,(m,n)=>String.fromCodePoint(parseInt(n,16))).replace(/&amp;/g,'&');}
+function docxParas(xml){
+  const out=[];
+  for(const p of xml.split(/<\/w:p>/)){
+    let t='';const re=/<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>|<w:tab\/>|<w:br(?:\s[^>]*)?\/>/g;let m;
+    while((m=re.exec(p))){if(m[1]!==undefined)t+=m[1];else if(m[0].startsWith('<w:tab'))t+=' ';else t+='\n';}
+    t=decodeXml(t);for(const ln of t.split('\n'))if(ln.trim())out.push(ln);
+  }
+  return out;
+}
+const KD='〇一二三四五六七八九';
+function kanjiToNum(s){
+  s=toHalf(s);if(/^[0-9]+$/.test(s))return +s;
+  if(/[十百千]/.test(s)){let total=0,cur=0;for(const ch of s){const d=KD.indexOf(ch);if(d>=0)cur=d;else if(ch==='十'){total+=(cur||1)*10;cur=0;}else if(ch==='百'){total+=(cur||1)*100;cur=0;}else if(ch==='千'){total+=(cur||1)*1000;cur=0;}else return NaN;}return total+cur;}
+  let n=0;for(const ch of s){const d=KD.indexOf(ch);if(d<0)return NaN;n=n*10+d;}return n;
+}
+const NUMC='[〇一二三四五六七八九十百千0-9０-９]+';
+const HEAD_RE=new RegExp('^第?('+NUMC+')(編|章|節|款|目)(?:の('+NUMC+'))?(?:[\\s　]+|$)');
+const ART_RE=new RegExp('^第?('+NUMC+')条?(?:の('+NUMC+'))?(?:[-－‐]('+NUMC+'))?');
+const HLV={編:1,章:2,節:3,款:4,目:5};
+function parseRoppo(paras){
+  const arts={},order=[],heads=[];let cur=null,prev=0;
+  for(const raw of paras){
+    const s=raw.replace(/\*\*/g,'').replace(/[​﻿]/g,'').replace(/\s+$/,'').replace(/^[\s　・-]+(?=[〇一二三四五六七八九十百千0-9０-９第])/,'');
+    if(!s.trim())continue;
+    const h=s.match(HEAD_RE);
+    if(h&&s.length<70){
+      const label=s.replace(/（続き）|\(続き\)/g,'').replace(/[\s　]+/g,' ').trim();const lv=HLV[h[2]];
+      const last=heads[heads.length-1];
+      if(!(last&&last.lv===lv&&last.label===label))heads.push({lv,label,at:order.length});
+      cur=null;continue;
+    }
+    const m=s.match(ART_RE);
+    if(m){
+      const b=kanjiToNum(m[1]),e=m[2]?kanjiToNum(m[2]):0,v=b+e/1000;const rest=s.slice(m[0].length);
+      const sep=!rest||/^[\s　：:（(]/.test(rest)||!/^[぀-ヿ㐀-鿿]/.test(rest);
+      const digits=toHalf(m[1]).length;
+      if(b>0&&b<3000&&!isNaN(v)&&v>=prev&&(sep||(digits>=3&&v-prev<=30))&&!(digits===1&&!m[0].startsWith('第')&&!sep)){
+        const key=b+(e?'の'+e:'');
+        if(!arts[key]){arts[key]=[];order.push(key);}
+        arts[key].push(s.trim());cur=key;prev=v;continue;
+      }
+    }
+    if(cur&&arts[cur].length<80)arts[cur].push(s.trim());
+  }
+  const toc=[];
+  if(heads.length){
+    const minLv=Math.min(...heads.map(h=>h.lv));
+    heads.forEach((h,i)=>{
+      let end=order.length;for(let j=i+1;j<heads.length;j++){if(heads[j].lv<=h.lv){end=heads[j].at;break;}}
+      if(end>h.at)toc.push([h.lv-minLv+1,h.label,order[h.at],order[end-1]]);
+    });
+  }
+  return {arts,toc,n:order.length};
+}
+function getToc(law){const d=ROPPO[law],b=TOC[law];if(d&&d.toc&&d.toc.length>(b?b.length:0))return d.toc;return b||null;}
 
 /* ===================== GitHub 同期（論PASSと同じ方式） ===================== */
 const DATA_PATH='jobun-sniper/data.json';
@@ -1198,6 +1339,7 @@ function repoBase(){
   if(!o||!rp){const e=new Error('リポジトリ名は「ユーザー名/リポジトリ名」の形で入力してください');e.msg=e.message;throw e;}
   return `/repos/${encodeURIComponent(o)}/${encodeURIComponent(rp)}`;
 }
+const encPath=p=>p.split('/').map(encodeURIComponent).join('/');
 function mergeRemote(R){
   let ch=false;
   for(const [k,t] of Object.entries(R.del||{}))if(!(S.del[k]>=t)){S.del[k]=t;ch=true;}
@@ -1207,6 +1349,21 @@ function mergeRemote(R){
   if(kept.length!==S.custom.length)ch=true;S.custom=kept;
   for(const [id,st] of Object.entries(R.stats||{})){const l=S.stats[id];if(!l||(st.ts||0)>(l.ts||0)){S.stats[id]=st;ch=true;}}
   for(const [id,t] of Object.entries(R.rv||{})){const l=S.rv[id];if(l===undefined||Math.abs(t)>Math.abs(l)){S.rv[id]=t;ch=true;}}
+  return ch;
+}
+async function syncRoppo(base,remoteMeta){
+  const rr=remoteMeta||{};let ch=false;const up=[];
+  for(const law of new Set([...Object.keys(rr),...Object.keys(S.rmeta)])){
+    const r=rr[law],l=S.rmeta[law];
+    if(r!==undefined&&(l===undefined||Math.abs(r)>Math.abs(l))){
+      if(r>0){try{const txt=await gh(`${base}/contents/${encPath(lawFile(law))}`,{raw:true});const d=JSON.parse(txt);ROPPO[law]=d;await RDB.put(law,d).catch(()=>{});S.rmeta[law]=r;ch=true;}catch(e){if(e.status!==404)throw e;}}
+      else{delete ROPPO[law];await RDB.del(law).catch(()=>{});S.rmeta[law]=r;ch=true;}
+    }else if(l!==undefined&&l>0&&(r===undefined||l>Math.abs(r))&&ROPPO[law])up.push(law);
+  }
+  if(up.length){
+    let shas={};try{const ls=await gh(`${base}/contents/jobun-sniper`);if(Array.isArray(ls))for(const f of ls)shas[f.path]=f.sha;}catch(e){if(e.status!==404)throw e;}
+    for(const law of up){const path=lawFile(law);const body={message:'roppo '+law,content:b64utf8(JSON.stringify(ROPPO[law]))};if(shas[path])body.sha=shas[path];await gh(`${base}/contents/${encPath(path)}`,{method:'PUT',body});}
+  }
   return ch;
 }
 async function doSync(retry){
@@ -1220,8 +1377,11 @@ async function doSync(retry){
   }catch(e){if(e.status!==404)throw e;}
   const chg0=S.chg;let ch=false;
   if(remote){ch=mergeRemote(remote);if(ch){rebuild();saveLocal();}}
-  if(!sha||chg0!==S.sync.pushed){
-    const data={app:'jobun-sniper',v:1,at:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del};
+  const rch=await syncRoppo(base,remote&&remote.rmeta);
+  if(rch){saveLocal();ch=true;}
+  const metaDiff=JSON.stringify(S.rmeta)!==JSON.stringify((remote&&remote.rmeta)||{});
+  if(!sha||chg0!==S.sync.pushed||metaDiff){
+    const data={app:'jobun-sniper',v:1,at:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del,rmeta:S.rmeta};
     const body={message:'sync '+data.at,content:b64utf8(JSON.stringify(data))};if(sha)body.sha=sha;
     try{await gh(`${base}/contents/${DATA_PATH}`,{method:'PUT',body});}
     catch(e){if(!retry&&(e.status===409||e.status===422))return doSync(true);throw e;}
@@ -1237,7 +1397,7 @@ async function syncNow(manual){
   syncing=true;clearTimeout(syncT);setSyncStat('busy');
   try{
     const ch=await doSync(false);S.sync.last=Date.now();S.sync.err='';saveLocal();setSyncStat('ok');
-    if(ch){bag=[];updBadge();if(curView!=='quiz'||!cur)refreshCurrentView();else renderSess();}
+    if(ch){bag=[];updBadge();if(curView!=='quiz'||!cur)refreshCurrentView();else{renderSess();if(cur.done){renderResult();renderToc();}}}
     if(manual)toast(ch?'同期しました（ほかの端末の記録を取り込みました）':'同期しました');
   }catch(e){S.sync.err=syncErr(e);saveLocal();setSyncStat('err');if(manual)toast('同期に失敗：'+S.sync.err,true,4000);}
   finally{syncing=false;if(syncAgain){syncAgain=false;scheduleSync(2000);}}
@@ -1252,7 +1412,7 @@ window.addEventListener('online',()=>{if(syncReady()&&S.sync.auto)syncNow(false)
 /* ===================== 採点 ===================== */
 function chapterOf(law,a){
   const t=TOC[law];if(!t)return null;
-  const v=a.b+a.e/1000;const path=[];
+  const v=aval(a);const path=[];
   for(const [lv,label,f,to] of t){if(v>=num(f)&&v<=num(to)){path[lv-1]=label;path.length=lv;}}
   const p=path.filter(Boolean);return p.length?p:null;
 }
@@ -1267,11 +1427,12 @@ function scoreOne(c,a,law){
   const d=Math.abs(a.b-c.b);
   let s=d===1?70:d<=3?55:d<=10?40:d<=30?22:d<=100?10:3;
   const pa=chapterOf(law,a),pc=chapterOf(law,c);
-  if(pa&&pc&&pa.join('>')===pc.join('>'))s=Math.min(s+8,79);
+  if(pa&&pc&&pa.slice(0,2).join('>')===pc.slice(0,2).join('>'))s=Math.min(s+8,79);
   return s;
 }
 function grade(q,a){let best=scoreOne(q.a,a,q.law);for(const alt of q.alts)best=Math.max(best,scoreOne(alt,a,q.law));return best;}
-function verdict(p){return p===100?['命中','v1']:p>=75?['かすった','v2']:p>=40?['射程内','v3']:['大外れ','v4'];}
+const PASS=85,NEAR=55;
+function verdict(p){return p>=PASS?['合格','v1']:p>=NEAR?['惜しい','v2']:p>=40?['射程内','v3']:['大外れ','v4'];}
 function speedLabel(sec){return sec<=6?'早撃ち':sec<=15?'標準':'じっくり';}
 const ab=s=>S.settings.abbr?String(s??'').replace(ABBR_RE,m=>ABBR_MAP.get(m)):String(s??'');
 
@@ -1279,11 +1440,11 @@ const ab=s=>S.settings.abbr?String(s??'').replace(ABBR_RE,m=>ABBR_MAP.get(m)):St
 let fxT=0;
 function playFx(kind){
   if(!S.settings.anim)return;
-  const fx=$('#fx');const gold=kind==='hit';
-  const n=gold?14:0;let parts='';
-  for(let i=0;i<n;i++){const ang=i/n*Math.PI*2+Math.random()*.3,dist=90+Math.random()*60;parts+=`<i class="p" style="--dx:${Math.round(Math.cos(ang)*dist)}px;--dy:${Math.round(Math.sin(ang)*dist)}px;animation-delay:${(.12+Math.random()*.08).toFixed(2)}s"></i>`;}
-  fx.innerHTML=`<div class="fxw" style="--fxc:${gold?'var(--gold)':'var(--cyan)'}">${parts}<span class="ring"></span>${gold?'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#f2c14f" stroke-width="3"/><circle cx="50" cy="50" r="22" fill="none" stroke="#f2c14f" stroke-width="1.5" opacity=".7"/><path d="M50 2v26M50 72v26M2 50h26M72 50h26" stroke="#f2c14f" stroke-width="3" stroke-linecap="round"/></svg>':''}<span class="txt">${gold?'命中！<small>BULLSEYE</small>':'かすった！'}</span></div>`;
-  fx.hidden=false;clearTimeout(fxT);fxT=setTimeout(()=>{fx.hidden=true;fx.innerHTML='';},gold?1000:800);
+  const fx=$('#fx');const pass=kind==='pass';
+  const n=pass?16:8;let parts='';
+  for(let i=0;i<n;i++){const ang=i/n*Math.PI*2+Math.random()*.3,dist=(pass?100:70)+Math.random()*60;parts+=`<i class="p" style="--dx:${Math.round(Math.cos(ang)*dist)}px;--dy:${Math.round(Math.sin(ang)*dist)}px;animation-delay:${(.1+Math.random()*.08).toFixed(2)}s"></i>`;}
+  fx.innerHTML=`<div class="fxw" style="--fxc:${pass?'var(--blue)':'var(--cyan)'}">${pass?'<span class="flash"></span>':''}${parts}<span class="ring"></span>${pass?'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#1570ff" stroke-width="3"/><circle cx="50" cy="50" r="24" fill="none" stroke="#12b3ff" stroke-width="1.6"/><path d="M50 1 L53 30 L50 34 L47 30Z M50 99 L53 70 L50 66 L47 70Z M1 50 L30 47 L34 50 L30 53Z M99 50 L70 47 L66 50 L70 53Z" fill="#12b3ff"/><circle cx="50" cy="50" r="3.5" fill="#0a2463"/></svg>':''}<span class="txt${pass?'':' graze'}">${pass?'合格！<small>BULLSEYE</small>':'惜しい！'}</span></div>`;
+  fx.hidden=false;clearTimeout(fxT);fxT=setTimeout(()=>{fx.hidden=true;fx.innerHTML='';},pass?1050:850);
 }
 
 /* ===================== 出題 ===================== */
@@ -1330,14 +1491,14 @@ function submit(pass){
   const pts=pass?0:grade(cur.q,ans);
   const q=cur.q;
   const st=S.stats[q.id]||{n:0,s:0,t:0,b:0,p:0};
-  st.n++;st.s+=pts;st.t=Math.round((st.t+sec)*10)/10;st.l=pts;st.la=ans?aCode(ans):'パス';st.b=Math.max(st.b||0,pts);st.p=(st.p||0)+(pts===100?1:0);st.ts=Date.now();
+  st.n++;st.s+=pts;st.t=Math.round((st.t+sec)*10)/10;st.l=pts;st.la=ans?aCode(ans):'パス';st.b=Math.max(st.b||0,pts);st.p=(st.p||0)+(pts>=PASS?1:0);st.ts=Date.now();
   S.stats[q.id]=st;
-  if(pts<40)setRev(q.id,true);else if(pts===100&&inRev(q.id))setRev(q.id,false);
-  const bonus=pts===100?Math.max(0,Math.round(15-sec)):0;
-  sess.n++;sess.sum+=pts;sess.sec+=sec;sess.score+=pts+bonus;if(pts===100)sess.perfect++;
+  if(pts<40)setRev(q.id,true);else if(pts>=PASS&&inRev(q.id))setRev(q.id,false);
+  const bonus=pts>=PASS?Math.max(0,Math.round(15-sec)):0;
+  sess.n++;sess.sum+=pts;sess.sec+=sec;sess.score+=pts+bonus;if(pts>=PASS)sess.perfect++;
   cur.done=true;cur.res={ans,pts,sec,bonus,pass};
   touch();updBadge();renderAns();renderToc();renderSess();
-  if(pts===100)playFx('hit');else if(pts>=75)playFx('graze');
+  if(pts>=PASS)playFx('pass');else if(pts>=NEAR)playFx('near');
 }
 const laFmt=la=>{if(!la||la==='パス')return la||'—';if(la.includes(','))return fmtA(parseAns(la));return la;};
 function modeLabel(){
@@ -1349,14 +1510,12 @@ function modeLabel(){
 const QFS=[18,22,26,32,40];
 function applySettings(){
   document.documentElement.style.setProperty('--qfs',QFS[(S.settings.qfs||3)-1]+'px');
+  $('#stage').dataset.asz=String(S.settings.asz||2);
   applyLayout();
 }
 const landMQ=matchMedia('(orientation: landscape) and (min-width: 820px)');
 function isH(){const l=S.settings.layout;return l==='h'||(l==='auto'&&landMQ.matches);}
-function applyLayout(){
-  const st=$('#stage');const h=isH();
-  st.classList.toggle('h',h);st.classList.toggle('notoc',!S.settings.toc);
-}
+function applyLayout(){const st=$('#stage');st.classList.toggle('h',isH());st.classList.toggle('notoc',!S.settings.toc);}
 (landMQ.addEventListener?landMQ.addEventListener('change',applyLayout):landMQ.addListener(applyLayout));
 function segHTML(key,label,opts){
   const v=String(S.settings[key]);
@@ -1369,6 +1528,7 @@ function renderCtrl(){
   $('#segs').innerHTML=segHTML('layout','配置',[['auto','自動'],['h','横'],['v','縦']])
     +segHTML('toc','目次',[['true','表示'],['false','非表示']])
     +segHTML('qfs','文字',[[1,'小'],[2,'中'],[3,'大'],[4,'特大'],[5,'最大']])
+    +segHTML('asz','入力枠',[[1,'小'],[2,'中'],[3,'大'],[4,'特大']])
     +segHTML('artMode','条',[['dial','ダイアル'],['text','テキスト']])
     +segHTML('kgMode','項・号',[['btn','ボタン'],['text','テキスト']]);
 }
@@ -1378,13 +1538,13 @@ function renderQuiz(){
   if(mode.kind==='normal')mb.hidden=true;
   else{mb.hidden=false;mb.innerHTML=`<span>${esc(modeLabel())}</span><button class="btn sm ghost" data-act="exitMode">通常の出題に戻る</button>`;}
   if(!cur){
-    $('#qcard').innerHTML=`<p class="empty">${mode.kind==='review'?'復習リストは空です。全弾命中、お見事。':'この条件に合う問題がありません。科目や種別を変えてください。'}</p>`;
+    $('#qcard').innerHTML=`<p class="empty">${mode.kind==='review'?'復習リストは空です。全問合格、お見事。':'この条件に合う問題がありません。科目や種別を変えてください。'}</p>`;
     $('#ansBox').innerHTML='';$('#tocBox').innerHTML='';renderSess();return;
   }
   const q=cur.q;
   const srcTag=q.src==='bank'?'':`<span class="tag u">${q.src==='ai'?'AI抽出':'自作'}</span>`;
   $('#qcard').innerHTML=`<div class="qtags"><span class="tag s">${esc(q.s)}</span>${q.law!==q.s?`<span class="tag">${esc(q.law)}</span>`:''}<span class="tag t">${esc(TL[q.ty]||q.ty)}</span>${srcTag}
-    <span class="qtools"><button class="fsb" data-act="fs" data-d="-1" aria-label="文字を小さく">A−</button><button class="fsb" data-act="fs" data-d="1" aria-label="文字を大きく">A＋</button><span class="timer"><span id="tnum">0.0</span><small>秒</small></span></span></div>
+    <span class="qtools"><button class="fsb" data-act="fs" data-d="-1" aria-label="問題の文字を小さく">A−</button><button class="fsb" data-act="fs" data-d="1" aria-label="問題の文字を大きく">A＋</button><span class="timer"><span id="tnum">0.0</span><small>秒</small></span></span></div>
   <p class="qtext">${esc(ab(q.p))}</p>
   <p class="qhint">${q.ty==='事例'?'この事例で使う条文を撃ち抜け':'対応する条文を撃ち抜け'}（第${qNo}問）</p>`;
   renderToc();renderAns();renderSess();
@@ -1393,10 +1553,10 @@ function renderToc(){
   const box=$('#tocBox');
   if(!cur||!S.settings.toc){box.innerHTML='';box.hidden=true;return;}
   box.hidden=false;
-  const t=TOC[cur.q.law];
+  const t=getToc(cur.q.law);const src=ROPPO[cur.q.law]&&t===ROPPO[cur.q.law].toc?'（圧縮六法）':'';
   if(!t){box.innerHTML=`<div class="toc"><h3>${esc(cur.q.law)} 目次</h3><p class="muted small" style="margin:0">この法令の目次データはありません。</p></div>`;return;}
-  const v=cur.done?cur.q.a.b+cur.q.a.e/1000:-1;
-  box.innerHTML=`<div class="toc"><h3>${esc(cur.q.law)} 目次</h3><ul>${t.map(([lv,l,f,to])=>`<li class="l${lv}${v>=num(f)&&v<=num(to)?' hit':''}"><span>${esc(l)}</span><span class="rng">${f===to?f:f+'–'+to}</span></li>`).join('')}</ul></div>`;
+  const v=cur.done?aval(cur.q.a):-1;
+  box.innerHTML=`<div class="toc"><h3>${esc(cur.q.law)} 目次${src}</h3><ul>${t.map(([lv,l,f,to])=>`<li class="l${lv}${v>=num(f)&&v<=num(to)?' hit':''}"><span>${esc(l)}</span><span class="rng">${f===to?f:f+'–'+to}</span></li>`).join('')}</ul></div>`;
   if(cur.done){const hits=box.querySelectorAll('li.hit');const h=hits[hits.length-1];const ul=box.querySelector('ul');if(h&&ul)ul.scrollTop=Math.max(0,h.offsetTop-ul.offsetTop-ul.clientHeight/2);}
 }
 const WL=['千','百','十','一'];
@@ -1421,6 +1581,7 @@ function renderAns(){
   const kUI=st.kgMode==='btn'?chipsHTML('k',10):`<div class="tin"><input class="t" id="tK" inputmode="numeric" autocomplete="off" placeholder="なし"><span class="u">項</span></div>`;
   const gUI=st.kgMode==='btn'?chipsHTML('g',13):`<div class="tin"><input class="t" id="tG" inputmode="numeric" autocomplete="off" placeholder="なし"><span class="u">号</span></div>`;
   box.innerHTML=`<div class="ans">
+    <div class="anshead"><span>入力枠の大きさ</span><button class="fsb" data-act="asz" data-d="-1" aria-label="入力枠を小さく">枠−</button><button class="fsb" data-act="asz" data-d="1" aria-label="入力枠を大きく">枠＋</button></div>
     <div class="fld"><div class="fl">条</div><div class="body">${artUI}</div></div>
     <div class="fld"><div class="fl">項</div><div class="body">${kUI}</div></div>
     <div class="fld"><div class="fl">号</div><div class="body">${gUI}</div></div>
@@ -1438,10 +1599,7 @@ function updDial(){
   updPreview();
 }
 function updPreview(){const pv=$('#pv');if(!pv)return;const a=readAnswer();pv.textContent=a?fmtA(a):'—';const er=$('#ansErr');if(er&&a)er.textContent='';}
-function stepDial(i,dir){
-  if(i===4)inp.e=(inp.e+dir+31)%31;else inp.d[i]=(inp.d[i]+dir+10)%10;
-  updDial();
-}
+function stepDial(i,dir){if(i===4)inp.e=(inp.e+dir+31)%31;else inp.d[i]=(inp.d[i]+dir+10)%10;updDial();}
 let drag=null,suppressClick=false;
 function bindWheels(){
   document.querySelectorAll('#dial .wheel').forEach(w=>{
@@ -1461,12 +1619,45 @@ function bindWheels(){
     w.addEventListener('pointerup',end);w.addEventListener('pointercancel',end);
   });
 }
+/* 体系上の位置（目次の構図と、その先の区分） */
+function structInfo(law,a){
+  const t=getToc(law);if(!t)return null;
+  const v=aval(a);const path=[];
+  t.forEach((e,i)=>{if(v>=num(e[2])&&v<=num(e[3])){path[e[0]-1]=i;path.length=e[0];}});
+  const ids=path.filter(x=>x!==undefined);if(!ids.length)return null;
+  const last=ids[ids.length-1],lv=t[last][0];let next=null;
+  for(let j=last+1;j<t.length;j++){if(t[j][0]<=lv){next=t[j];break;}}
+  return {path:ids.map(i=>t[i]),next};
+}
+const rngTxt=e=>e[2]===e[3]?e[2]+'条':e[2]+'〜'+e[3]+'条';
+function structHTML(q){
+  const si=structInfo(q.law,q.a);if(!si)return '';
+  const last=si.path[si.path.length-1];
+  const crumbs=si.path.map((e,i)=>`<span class="crumb${i===si.path.length-1?' last':''}">${esc(e[1])}</span>`).join('<i>＞</i>');
+  return `<div class="struct"><div class="sh">体系上の位置</div><div class="crumbs"><span class="crumb law">${esc(q.law)}</span><i>＞</i>${crumbs}</div>
+  <p><b>${esc(last[1])}</b>（${rngTxt(last)}）の中。${si.next?`<b>${esc(si.next[1])}</b>（${si.next[2]}条〜）の前。`:'この法令の最後の区分。'}</p></div>`;
+}
+/* 圧縮六法の本文 */
+function roppoLines(law,a){const d=ROPPO[law];if(!d)return null;return d.arts[artStr(a)]||[];}
+function lineClass(s,i){if(i===0||ART_RE.test(s))return 'head';if(/^【★|^★/.test(s))return 'th';if(/^【/.test(s))return 'cs';return 'sub';}
+function roppoHTML(law,a,title){
+  const lines=roppoLines(law,a);
+  if(lines===null){
+    if(!Object.keys(ROPPO).length)return `<p class="muted small" style="margin:0">「同期・設定」→「圧縮六法」でご自分の圧縮六法を読み込むと、ここに条文の内容が出ます。</p>`;
+    return '';
+  }
+  if(!lines.length)return `<p class="muted small" style="margin:0">圧縮六法（${esc(law)}）に${artStr(a)}条の記載はありません。</p>`;
+  const show=lines.slice(0,8),rest=lines.slice(8);
+  const ln=(s,i)=>`<p class="rl ${lineClass(s,i)}">${esc(s)}</p>`;
+  return `<div class="roppo"><div class="sh">${esc(title)}</div>${show.map(ln).join('')}${rest.length?`<details><summary>続きを表示（${rest.length}行）</summary>${rest.map((s,i)=>ln(s,i+8)).join('')}</details>`:''}</div>`;
+}
 function renderResult(){
   const q=cur.q,r=cur.res;const [vl,vc]=verdict(r.pts);
-  const path=chapterOf(q.law,q.a);
   const alts=q.alts.length?`<div><dt>別解として可</dt><dd>${q.alts.map(fmtA).join('・')}</dd></div>`:'';
+  const sub=r.pass?'':r.pts===100?'満点':'';
+  const mine=r.ans&&artStr(r.ans)!==artStr(q.a)&&roppoLines(q.law,r.ans)&&roppoLines(q.law,r.ans).length?`<details class="roppo"><summary>撃った条文（${esc(fmtA({...r.ans,k:0,g:0}))}）の内容も見る</summary>${roppoHTML(q.law,r.ans,'あなたが撃った条文')}</details>`:'';
   $('#ansBox').innerHTML=`<div class="res ${vc}">
-    <div class="verdict"><span class="vlabel">${r.pass?'見送り':vl}</span><span class="pts">${r.pts}<small>/100 近さ</small></span></div>
+    <div class="verdict"><span class="vlabel">${r.pass?'見送り':vl}${sub?`<small>${sub}</small>`:''}</span><span class="pts">${r.pts}<small>/100 近さ</small></span></div>
     <div class="meter"><i style="width:${r.pts}%"></i></div>
     <dl class="cmp">
       <div><dt>あなた</dt><dd>${r.ans?fmtA(r.ans):'—'}</dd></div>
@@ -1476,15 +1667,17 @@ function renderResult(){
       <div><dt>外れ度</dt><dd>${100-r.pts}${r.bonus?`　<span class="muted small">早撃ち+${r.bonus}</span>`:''}</dd></div>
     </dl>
     ${q.n?`<p class="note">${esc(ab(q.n))}</p>`:''}
-    ${path?`<p class="where">${esc(q.law)} › ${path.map(esc).join(' › ')}</p>`:''}
-    <div class="acts"><button class="btn ghost" data-act="togRev">${inRev(q.id)?'復習リストから外す':'復習リストに入れる'}</button><button class="btn pri" data-act="next" id="nextBtn">次の標的<kbd>Enter</kbd></button></div>
+    ${structHTML(q)}
+    ${roppoHTML(q.law,q.a,'圧縮六法：'+q.law+' '+artStr(q.a)+'条')}
+    ${mine}
+    <div class="acts"><button class="btn ghost" data-act="togRev">${inRev(q.id)?'復習リストから外す':'復習リストに入れる'}</button><button class="btn go" data-act="next" id="nextBtn">次の標的<kbd>Enter</kbd></button></div>
   </div>`;
   if(matchMedia('(pointer:fine)').matches){const nb=$('#nextBtn');if(nb)nb.focus({preventScroll:true});}
 }
 function renderSess(){
   const el=$('#sess');
   if(!sess.n){el.innerHTML=`<span>収録 <b>${Q.length}</b>問</span><span>この条件で <b>${poolIds().length}</b>問</span>`;return;}
-  el.innerHTML=`<span>今回 <b>${sess.n}</b>問</span><span>命中 <b>${sess.perfect}</b></span><span>平均近さ <b>${Math.round(sess.sum/sess.n)}</b></span><span>平均 <b>${(sess.sec/sess.n).toFixed(1)}</b>秒</span><span>スコア <b>${sess.score}</b></span>`;
+  el.innerHTML=`<span>今回 <b>${sess.n}</b>問</span><span>合格 <b>${sess.perfect}</b></span><span>平均近さ <b>${Math.round(sess.sum/sess.n)}</b></span><span>平均 <b>${(sess.sec/sess.n).toFixed(1)}</b>秒</span><span>スコア <b>${sess.score}</b></span>`;
 }
 setInterval(()=>{if(cur&&!cur.done&&curView==='quiz'){const t=$('#tnum');if(t)t.textContent=((performance.now()-cur.t0)/1000).toFixed(1);}},100);
 
@@ -1513,7 +1706,7 @@ function rankData(subj){
 }
 function renderRank(){
   const rows=SUBJ.map(s=>{let n=0,sum=0,t=0,p=0,done=0,total=0;for(const q of Q){if(q.s!==s)continue;total++;const st=S.stats[q.id];if(st){done++;n+=st.n;sum+=st.s;t+=st.t;p+=st.p||0;}}return {s,n,avg:n?Math.round(sum/n):null,pr:n?Math.round(p/n*100):null,t:n?(t/n).toFixed(1):null,done,total};});
-  $('#subjTable').innerHTML=`<table><thead><tr><th>科目</th><th>解答数</th><th>平均近さ</th><th>命中率</th><th>平均時間</th><th>挑戦済み</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.s}</td><td>${r.n}</td><td class="${r.avg==null?'':r.avg>=80?'hi':r.avg<50?'lo':''}">${r.avg??'—'}</td><td>${r.pr==null?'—':r.pr+'%'}</td><td>${r.t==null?'—':r.t+'秒'}</td><td>${r.done}/${r.total}</td></tr>`).join('')}</tbody></table>`;
+  $('#subjTable').innerHTML=`<table><thead><tr><th>科目</th><th>解答数</th><th>平均近さ</th><th>合格率</th><th>平均時間</th><th>挑戦済み</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.s}</td><td>${r.n}</td><td class="${r.avg==null?'':r.avg>=80?'hi':r.avg<50?'lo':''}">${r.avg??'—'}</td><td>${r.pr==null?'—':r.pr+'%'}</td><td>${r.t==null?'—':r.t+'秒'}</td><td>${r.done}/${r.total}</td></tr>`).join('')}</tbody></table>`;
   subjChips('#rankSubj',rankSubj,'rankSubj');
   const data=rankData(rankSubj).slice(0,50);
   $('#rankList').innerHTML=data.length?data.map((x,i)=>itemHTML(x.q,x.st,i+1,`<button class="btn sm pri" data-act="tryOne" data-id="${x.q.id}">挑戦</button>`)).join('')
@@ -1614,6 +1807,38 @@ function aiAdd(subj){
   AIRES=[];$('#aiRes').innerHTML='';$('#aiMsg').textContent=`${items.length}件追加しました${bad?`（${bad}件は条文番号が読めず除外）`:''}`;
 }
 
+/* ===================== 圧縮六法の画面 ===================== */
+let PEND=[];
+function renderRoppo(){
+  const laws=Object.keys(ROPPO).sort((a,b)=>ALL_LAWS.indexOf(a)-ALL_LAWS.indexOf(b));
+  $('#roppoList').innerHTML=laws.length?laws.map(l=>{const d=ROPPO[l];return `<div class="rrow"><b>${esc(l)}</b><span>${d.n}条</span><span class="muted small">${d.toc&&d.toc.length?`目次${d.toc.length}項目`:'目次なし（内蔵の目次を使用）'}・${esc(d.src||'')}</span><span class="sp"><button class="btn sm danger" data-act="roppoDel" data-law="${esc(l)}" data-confirm="もう一度で削除">削除</button></span></div>`;}).join('')
+    :'<p class="muted small" style="margin:0">まだ読み込まれていません。</p>';
+  const opts=l=>ALL_LAWS.map(x=>`<option${x===l?' selected':''}>${x}</option>`).join('');
+  $('#roppoPend').innerHTML=PEND.length?PEND.map((p,i)=>`<div class="rrow"><span>${esc(p.file.name)}</span><span class="sp"><select class="t" id="rpL${i}" style="width:auto">${p.law?'':'<option value="">法令を選ぶ</option>'}${opts(p.law)}</select></span></div>`).join('')+`<div class="acts"><button class="btn go" data-act="roppoGo">読み込む</button></div>`:'';
+}
+async function roppoGo(){
+  const msg=$('#roppoMsg');const done=[],errs=[];
+  for(let i=0;i<PEND.length;i++){if(!$('#rpL'+i).value){msg.textContent=`${PEND[i].file.name}：法令を選んでください`;return;}}
+  for(let i=0;i<PEND.length;i++){
+    const p=PEND[i];const law=$('#rpL'+i).value;
+    msg.textContent=`${p.file.name} を読み込んでいます…`;
+    try{
+      let paras;
+      if(/\.txt$/i.test(p.file.name)||p.file.type==='text/plain')paras=(await p.file.text()).split(/\r?\n/);
+      else paras=docxParas(await unzipEntry(await p.file.arrayBuffer(),'word/document.xml'));
+      const r=parseRoppo(paras);
+      if(r.n<3){errs.push(`${p.file.name}：条文を見つけられませんでした（条文番号が行の先頭にある形式か確認してください）`);continue;}
+      const d={law,src:p.file.name,at:Date.now(),n:r.n,arts:r.arts,toc:r.toc};
+      await RDB.put(law,d).catch(()=>{errs.push(law+'：この端末に保存できませんでした');});
+      ROPPO[law]=d;S.rmeta[law]=d.at;done.push(`${law} ${r.n}条`);
+    }catch(e){errs.push(`${p.file.name}：${e.message||'読み込めませんでした'}`);}
+  }
+  PEND=[];if(done.length)touch();renderRoppo();
+  msg.textContent=(done.length?`読み込みました：${done.join('、')}。`:'')+(errs.length?` ${errs.join(' ／ ')}`:'');
+  if(cur&&cur.done){renderResult();renderToc();}else renderToc();
+}
+async function roppoDel(law){delete ROPPO[law];await RDB.del(law).catch(()=>{});S.rmeta[law]=-Date.now();touch();renderRoppo();renderToc();toast(law+'の圧縮六法を削除しました');}
+
 /* ===================== 同期・設定画面 ===================== */
 function renderData(){
   $('#sRepo').value=S.sync.repo;$('#sTok').value=S.sync.token;$('#sAuto').checked=!!S.sync.auto;
@@ -1621,7 +1846,7 @@ function renderData(){
   $('#setAbbr').checked=!!S.settings.abbr;$('#setAnim').checked=!!S.settings.anim;$('#setPencil').checked=!!S.settings.pencil;
   $('#exportBox').value=JSON.stringify({app:'jobun-sniper',v:1,exported:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del});
   $('#verInfo').textContent=`条文スナイパー ${VERSION}・収録${BANK.length}問＋追加${Q.length-BANK.length}問`;
-  setSyncStat(S.sync.err?'err':'ok');
+  renderRoppo();setSyncStat(S.sync.err?'err':'ok');
 }
 function doImport(){
   let d;try{d=JSON.parse($('#importBox').value);}catch(e){toast('読み込めませんでした。書き出したテキストをそのまま貼り付けてください',true);return;}
@@ -1660,7 +1885,7 @@ function refreshCurrentView(){
 function setSetting(k,v){S.settings[k]=v;saveLocal();}
 function armConfirm(btn){
   if(btn.dataset.armed){delete btn.dataset.armed;return true;}
-  btn.dataset.armed='1';const orig=btn.textContent;btn.textContent=btn.dataset.confirm;
+  btn.dataset.armed='1';const orig=btn.textContent;btn.dataset.orig=orig;btn.textContent=btn.dataset.confirm;
   setTimeout(()=>{if(btn.isConnected&&btn.dataset.armed){delete btn.dataset.armed;btn.textContent=orig;}},3000);
   return false;
 }
@@ -1673,19 +1898,21 @@ document.addEventListener('click',e=>{
   const segb=e.target.closest('.seg button');
   if(segb){
     const k=segb.parentElement.dataset.set;let v=segb.dataset.v;
-    if(k==='toc')v=v==='true';else if(k==='qfs')v=+v;
+    if(k==='toc')v=v==='true';else if(k==='qfs'||k==='asz')v=+v;
     setSetting(k,v);
     if(k==='toc'||k==='layout'){applyLayout();renderToc();}
-    else if(k==='qfs')applySettings();
+    else if(k==='qfs'||k==='asz')applySettings();
     else if(cur&&!cur.done)renderAns();
     renderCtrl();return;
   }
   const b=e.target.closest('[data-act]');if(!b)return;
   const act=b.dataset.act;
   switch(act){
+    case 'home':e.preventDefault();show('quiz');break;
     case 'subj':setSetting('subj',b.dataset.v);mode={kind:'normal'};bag=[];nextQ();break;
     case 'type':setSetting('type',b.dataset.v);mode={kind:'normal'};bag=[];nextQ();break;
     case 'fs':{const v=Math.min(5,Math.max(1,(S.settings.qfs||3)+(+b.dataset.d)));setSetting('qfs',v);applySettings();renderCtrl();break;}
+    case 'asz':{const v=Math.min(4,Math.max(1,(S.settings.asz||2)+(+b.dataset.d)));setSetting('asz',v);applySettings();renderCtrl();break;}
     case 'dial':if(suppressClick)return;stepDial(+b.dataset.i,+b.dataset.dir);break;
     case 'dialclr':inp.d=[0,0,0,0];inp.e=0;updDial();break;
     case 'k':case 'g':{inp[act]=+b.dataset.v;document.querySelectorAll(`#${act}Chips button`).forEach(x=>x.classList.toggle('on',x===b));updPreview();break;}
@@ -1706,6 +1933,8 @@ document.addEventListener('click',e=>{
     case 'copyPrompt':copyText(aiPrompt($('#pSubj').value,10));break;
     case 'aiRun':aiRun();break;
     case 'aiAdd':aiAdd(b.dataset.subj);break;
+    case 'roppoGo':roppoGo();break;
+    case 'roppoDel':if(armConfirm(b))roppoDel(b.dataset.law);break;
     case 'copyExport':copyText($('#exportBox').value,$('#exportBox'));break;
     case 'doImport':doImport();break;
     case 'resetStats':if(armConfirm(b)){S.stats={};for(const id of Object.keys(S.rv))if(inRev(id))setRev(id,false);touch();updBadge();sess={n:0,perfect:0,sum:0,sec:0,score:0};b.textContent='成績をリセット';toast('成績を消去しました');}break;
@@ -1724,6 +1953,7 @@ document.addEventListener('change',e=>{
   else if(t.id==='setAbbr'){setSetting('abbr',t.checked);}
   else if(t.id==='setAnim'){setSetting('anim',t.checked);}
   else if(t.id==='setPencil'){setSetting('pencil',t.checked);}
+  else if(t.id==='roppoFile'){PEND=[...t.files].map(f=>({file:f,law:guessLaw(f.name)}));t.value='';$('#roppoMsg').textContent=PEND.length?'法令を確認して「読み込む」を押してください。':'';renderRoppo();}
 });
 document.addEventListener('keydown',e=>{
   if(curView!=='quiz')return;
@@ -1749,6 +1979,7 @@ document.addEventListener('keydown',e=>{
   }
   fillSelects();updBadge();
   show('quiz');setSyncStat(S.sync.err?'err':'ok');
+  loadRoppo().then(()=>{if(Object.keys(ROPPO).length){renderToc();if(cur&&cur.done)renderResult();if(curView==='data')renderRoppo();}});
   if(window.claude&&typeof window.claude.use==='function'){window.claude.use('sample').then(s=>{SAMPLE=s;$('#aiArea').hidden=!s;}).catch(()=>{});}
   if(syncReady()&&S.sync.auto&&!IN_ARTIFACT)setTimeout(()=>syncNow(false),800);
 })();

@@ -1,6 +1,6 @@
 // 条文スナイパー：オフライン用（保存済みファイルをすぐ表示し、通信できるときに裏で最新版へ更新）
-const CACHE='jsniper-v2.0';
-const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
+const CACHE='jsniper-v2.1';
+const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./logo-wordmark.jpg','./logo-full.jpg'];
 const FONT=/^https:\/\/fonts\.(googleapis|gstatic)\.com\//;
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
