@@ -1,19 +1,4 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="条文スナイパー">
-<meta name="theme-color" content="#0a1938">
-<meta name="format-detection" content="telephone=no">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" href="icon-192.png">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head>
-<body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>条文スナイパー</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -199,6 +184,19 @@ code{background:#081631;padding:1px 6px;border-radius:6px;font-size:.92em}
 .ans .acts .btn.go{min-width:180px;font-size:18px}
 .err{color:var(--bad);font-size:13px;margin:0}
 
+/* answer row: dial + action buttons */
+.artrow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.artin{min-width:0}
+.shoot{display:flex;flex-direction:column;gap:8px;min-width:150px}
+.shoot .btn.go{font-size:18px;padding:14px 16px}
+@media (max-width:480px){.shoot{flex-direction:row;width:100%}.shoot .btn{flex:1}.shoot .btn.go{flex:2}}
+/* editor */
+#editor{position:fixed;inset:0;z-index:80;background:rgba(2,6,18,.72);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.edbox{width:min(640px,100%);background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.batch{display:flex;flex-direction:column;gap:8px;list-style:none}
+.bhead{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:#0b2147;border:1px solid #2a5a9c;border-radius:12px;padding:8px 12px}
+.bhead b{color:#fff}
+.bhead .btn{margin-left:auto}
 /* result */
 .res{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;border-left:6px solid var(--c)}
 .res.v1{--c:var(--blue)} .res.v2{--c:var(--cyan)} .res.v3{--c:var(--ok)} .res.v4{--c:var(--bad)}
@@ -477,12 +475,13 @@ td.lo{color:var(--bad)} td.hi{color:var(--ok)}
     <p class="muted small" id="verInfo"></p>
   </div></section>
 </main>
+<div id="editor" hidden></div>
 <div id="fx" hidden></div>
 <div id="toast" hidden></div>
 
 <script>
 "use strict";
-const VERSION='2.1';
+const VERSION='2.3';
 /* ===================== 問題バンク =====================
    形式: 種別|問題文|条,項,号|解説|法令(省略時は科目の既定)|別解(;区切り) */
 const SUBJ=['憲法','行政法','民法','商法','民訴','刑法','刑訴'];
@@ -1193,11 +1192,11 @@ const ALL_LAWS=[...new Set(Object.values(LAWS_BY_SUBJ).flat())];
 const LS='jsniper.v1';
 const DEF_SET={subj:'all',type:'all',toc:true,artMode:'dial',kgMode:'btn',layout:'auto',qfs:3,asz:2,abbr:true,anim:true,pencil:false};
 const DEF_SYNC={repo:'',token:'',auto:true,last:0,err:'',pushed:0};
-let S={custom:[],stats:{},rv:{},del:{},rmeta:{},settings:{...DEF_SET},sync:{...DEF_SYNC},chg:0};
+let S={custom:[],stats:{},rv:{},del:{},ov:{},rmeta:{},settings:{...DEF_SET},sync:{...DEF_SYNC},chg:0};
 (function load(){
   try{
     const raw=localStorage.getItem(LS);
-    if(raw){const d=JSON.parse(raw);S={...S,...d,rmeta:d.rmeta||{},settings:{...DEF_SET,...(d.settings||{})},sync:{...DEF_SYNC,...(d.sync||{})}};return;}
+    if(raw){const d=JSON.parse(raw);S={...S,...d,ov:d.ov||{},rmeta:d.rmeta||{},settings:{...DEF_SET,...(d.settings||{})},sync:{...DEF_SYNC,...(d.sync||{})}};return;}
     const old=localStorage.getItem('jobunpro.v1');
     if(old){const d=JSON.parse(old);S.custom=(d.custom||[]).map(c=>({...c,m:c.m||c.ts||Date.now()}));S.stats=d.stats||{};S.del=d.del||{};for(const [id,t] of Object.entries(d.review||{}))S.rv[id]=t;S.settings={...DEF_SET,...(d.settings||{})};}
   }catch(e){}
@@ -1211,7 +1210,8 @@ const revIds=()=>Object.keys(S.rv).filter(inRev);
 let Q=[],IDX=new Map();
 function rebuild(){
   const custom=S.custom.filter(c=>!(S.del[c.id]>=(c.m||c.ts||0))).map(normCustom).filter(Boolean);
-  Q=[...BANK,...custom];IDX=new Map(Q.map(q=>[q.id,q]));
+  const bank=BANK.map(q=>{const o=S.ov[q.id];if(!o)return q;const a=parseAns(o.a)||q.a;return {...q,p:o.p||q.p,law:o.law||q.law,ty:TYPES.includes(o.ty)?o.ty:q.ty,a,n:o.n??q.n,alts:o.alt!==undefined?String(o.alt).split(";").map(parseAns).filter(Boolean):q.alts,edited:!!o.p};});
+  Q=[...bank,...custom];IDX=new Map(Q.map(q=>[q.id,q]));
 }
 rebuild();
 
@@ -1361,6 +1361,7 @@ function mergeRemote(R){
   if(kept.length!==S.custom.length)ch=true;S.custom=kept;
   for(const [id,st] of Object.entries(R.stats||{})){const l=S.stats[id];if(!l||(st.ts||0)>(l.ts||0)){S.stats[id]=st;ch=true;}}
   for(const [id,t] of Object.entries(R.rv||{})){const l=S.rv[id];if(l===undefined||Math.abs(t)>Math.abs(l)){S.rv[id]=t;ch=true;}}
+  for(const [id,o] of Object.entries(R.ov||{})){const l=S.ov[id];if(!l||(o.m||0)>(l.m||0)){S.ov[id]=o;ch=true;}}
   return ch;
 }
 async function syncRoppo(base,remoteMeta){
@@ -1393,7 +1394,7 @@ async function doSync(retry){
   if(rch){saveLocal();ch=true;}
   const metaDiff=JSON.stringify(S.rmeta)!==JSON.stringify((remote&&remote.rmeta)||{});
   if(!sha||chg0!==S.sync.pushed||metaDiff){
-    const data={app:'jobun-sniper',v:1,at:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del,rmeta:S.rmeta};
+    const data={app:'jobun-sniper',v:1,at:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del,ov:S.ov,rmeta:S.rmeta};
     const body={message:'sync '+data.at,content:b64utf8(JSON.stringify(data))};if(sha)body.sha=sha;
     try{await gh(`${base}/contents/${DATA_PATH}`,{method:'PUT',body});}
     catch(e){if(!retry&&(e.status===409||e.status===422))return doSync(true);throw e;}
@@ -1482,7 +1483,7 @@ function nextQ(){
   if(!id){cur=null;renderQuiz();return;}
   cur={q:IDX.get(id),t0:performance.now(),done:false};qNo++;
   inp={d:[0,0,0,0],e:0,k:0,g:0};
-  renderQuiz();
+  renderQuiz();scrollQTop();
   if(S.settings.artMode==='text'){const el=$('#tArt');if(el&&matchMedia('(pointer:fine)').matches)el.focus();}
 }
 function readAnswer(){
@@ -1495,6 +1496,7 @@ function readAnswer(){
   else{k=+toHalf(($('#tK')||{}).value||'')||0;g=+toHalf(($('#tG')||{}).value||'')||0;}
   return {...art,k,g};
 }
+function scrollQTop(){const q=$('#qcard');if(!q)return;const hd=document.querySelector('.top');const off=(hd?hd.getBoundingClientRect().bottom:0)+10;const y=q.getBoundingClientRect().top+window.scrollY-off;window.scrollTo(0,Math.max(0,y));}
 function submit(pass){
   if(!cur||cur.done)return;
   const sec=Math.round((performance.now()-cur.t0)/100)/10;
@@ -1510,6 +1512,7 @@ function submit(pass){
   sess.n++;sess.sum+=pts;sess.sec+=sec;sess.score+=pts+bonus;if(pts>=PASS)sess.perfect++;
   cur.done=true;cur.res={ans,pts,sec,bonus,pass};
   touch();updBadge();renderAns();renderToc();renderSess();
+  scrollQTop();
   if(pts>=PASS)playFx('pass');else if(pts>=NEAR)playFx('near');
 }
 const laFmt=la=>{if(!la||la==='パス')return la||'—';if(la.includes(','))return fmtA(parseAns(la));return la;};
@@ -1555,8 +1558,8 @@ function renderQuiz(){
   }
   const q=cur.q;
   const srcTag=q.src==='bank'?'':`<span class="tag u">${q.src==='ai'?'AI抽出':'自作'}</span>`;
-  $('#qcard').innerHTML=`<div class="qtags"><span class="tag s">${esc(q.s)}</span>${q.law!==q.s?`<span class="tag">${esc(q.law)}</span>`:''}<span class="tag t">${esc(TL[q.ty]||q.ty)}</span>${srcTag}
-    <span class="qtools"><button class="fsb" data-act="fs" data-d="-1" aria-label="問題の文字を小さく">A−</button><button class="fsb" data-act="fs" data-d="1" aria-label="問題の文字を大きく">A＋</button><span class="timer"><span id="tnum">0.0</span><small>秒</small></span></span></div>
+  $('#qcard').innerHTML=`<div class="qtags"><span class="tag s">${esc(q.s)}</span>${q.law!==q.s?`<span class="tag">${esc(q.law)}</span>`:''}<span class="tag t">${esc(TL[q.ty]||q.ty)}</span>${srcTag}${q.edited?'<span class="tag u">編集済</span>':''}
+    <span class="qtools"><button class="fsb" data-act="edit" data-id="${q.id}" aria-label="このカードを編集">編集</button><button class="fsb" data-act="fs" data-d="-1" aria-label="問題の文字を小さく">A−</button><button class="fsb" data-act="fs" data-d="1" aria-label="問題の文字を大きく">A＋</button><span class="timer"><span id="tnum">0.0</span><small>秒</small></span></span></div>
   <p class="qtext">${esc(ab(q.p))}</p>`;
   renderToc();renderAns();renderSess();
 }
@@ -1575,7 +1578,7 @@ function dialHTML(){
   return `<div class="dial" id="dial">${[0,1,2,3].map(i=>`<div class="wheel" data-w="${i}"><button data-act="dial" data-i="${i}" data-dir="1" aria-label="${WL[i]}の位を上げる">▲</button><div class="dg" id="dg${i}">0</div><button data-act="dial" data-i="${i}" data-dir="-1" aria-label="${WL[i]}の位を下げる">▼</button><div class="wl">${WL[i]}</div></div>`).join('')}
   <span class="jo">の</span>
   <div class="wheel eda" data-w="4"><button data-act="dial" data-i="4" data-dir="1" aria-label="枝番を上げる">▲</button><div class="dg" id="dg4">–</div><button data-act="dial" data-i="4" data-dir="-1" aria-label="枝番を下げる">▼</button><div class="wl">枝番</div></div></div>
-  <div class="dialtools"><button class="btn sm ghost" data-act="dialclr">クリア</button><span class="muted small">指・Apple Pencilで上下になぞる／ホイール／数字キーでも合わせられます</span></div>`;
+  <div class="dialtools"><button class="btn sm ghost" data-act="dialclr">クリア</button><span class="muted small">指・Pencilで上下になぞる／ホイール／数字キー</span></div>`;
 }
 function chipsHTML(kind,max){
   const v=inp[kind];
@@ -1593,12 +1596,11 @@ function renderAns(){
   const gUI=st.kgMode==='btn'?chipsHTML('g',13):`<div class="tin"><input class="t" id="tG" inputmode="numeric" autocomplete="off" placeholder="なし"><span class="u">号</span></div>`;
   box.innerHTML=`<div class="ans">
     <div class="anshead"><span>入力枠の大きさ</span><button class="fsb" data-act="asz" data-d="-1" aria-label="入力枠を小さく">枠−</button><button class="fsb" data-act="asz" data-d="1" aria-label="入力枠を大きく">枠＋</button></div>
-    <div class="fld"><div class="fl">条</div><div class="body">${artUI}</div></div>
+    <div class="fld"><div class="fl">条</div><div class="body artrow"><div class="artin">${artUI}</div><div class="shoot"><button class="btn go" data-act="submit">主張する！<kbd>Enter</kbd></button><button class="btn ghost" data-act="pass">見送る</button></div></div></div>
     <div class="fld"><div class="fl">項</div><div class="body">${kUI}</div></div>
     <div class="fld"><div class="fl">号</div><div class="body">${gUI}</div></div>
     <div class="preview">照準 <b id="pv">—</b></div>
     <p class="err" id="ansErr"></p>
-    <div class="acts"><button class="btn ghost" data-act="pass">見送る</button><button class="btn go" data-act="submit">撃つ！<kbd>Enter</kbd></button></div>
   </div>`;
   if(st.artMode==='dial'){updDial();bindWheels();}
   updPreview();
@@ -1610,7 +1612,7 @@ function updDial(){
   updPreview();
 }
 function updPreview(){const pv=$('#pv');if(!pv)return;const a=readAnswer();pv.textContent=a?fmtA(a):'—';const er=$('#ansErr');if(er&&a)er.textContent='';}
-function stepDial(i,dir){if(i===4)inp.e=(inp.e+dir+31)%31;else inp.d[i]=(inp.d[i]+dir+10)%10;updDial();}
+function stepDial(i,dir){if(i===4)inp.e=(inp.e+dir+31)%31;else if(i===0)inp.d[0]=(inp.d[0]+dir+2)%2;else inp.d[i]=(inp.d[i]+dir+10)%10;updDial();}
 let drag=null,suppressClick=false;
 function bindWheels(){
   document.querySelectorAll('#dial .wheel').forEach(w=>{
@@ -1619,12 +1621,11 @@ function bindWheels(){
     w.addEventListener('pointerdown',e=>{
       if(S.settings.pencil&&e.pointerType==='touch'&&!e.target.closest('button'))return;
       drag={i,y:e.clientY,moved:false,id:e.pointerId,step:e.pointerType==='pen'?16:22};
-      try{w.setPointerCapture(e.pointerId);}catch(_){}
     });
     w.addEventListener('pointermove',e=>{
       if(!drag||drag.id!==e.pointerId)return;
       const dy=drag.y-e.clientY;const steps=Math.trunc(dy/drag.step);
-      if(steps){drag.moved=true;for(let k=0;k<Math.abs(steps);k++)stepDial(i,steps>0?1:-1);drag.y-=steps*drag.step;}
+      if(steps){if(!drag.moved){drag.moved=true;try{w.setPointerCapture(e.pointerId);}catch(_){}}for(let k=0;k<Math.abs(steps);k++)stepDial(i,steps>0?1:-1);drag.y-=steps*drag.step;}
     });
     const end=e=>{if(drag&&drag.id===e.pointerId){if(drag.moved){suppressClick=true;setTimeout(()=>suppressClick=false,80);}drag=null;}};
     w.addEventListener('pointerup',end);w.addEventListener('pointercancel',end);
@@ -1681,7 +1682,7 @@ function renderResult(){
     ${structHTML(q)}
     ${roppoHTML(q.law,q.a,'圧縮六法：'+q.law+' '+artStr(q.a)+'条')}
     ${mine}
-    <div class="acts"><button class="btn ghost" data-act="togRev">${inRev(q.id)?'復習リストから外す':'復習リストに入れる'}</button><button class="btn go" data-act="next" id="nextBtn">次の標的<kbd>Enter</kbd></button></div>
+    <div class="acts"><button class="btn ghost" data-act="edit" data-id="${q.id}">カードを編集</button><button class="btn ghost" data-act="togRev">${inRev(q.id)?'復習リストから外す':'復習リストに入れる'}</button><button class="btn go" data-act="next" id="nextBtn">次の標的<kbd>Enter</kbd></button></div>
   </div>`;
   if(matchMedia('(pointer:fine)').matches){const nb=$('#nextBtn');if(nb)nb.focus({preventScroll:true});}
 }
@@ -1708,7 +1709,7 @@ function renderReview(){
   const ids=revIds().sort((a,b)=>S.rv[b]-S.rv[a]);
   const list=ids.map(id=>IDX.get(id)).filter(q=>q&&(revSubj==='all'||q.s===revSubj));
   $('#revCount').textContent=`${ids.length}問`;
-  $('#revList').innerHTML=list.length?list.map(q=>itemHTML(q,S.stats[q.id],null,`<button class="btn sm pri" data-act="tryOne" data-id="${q.id}">挑戦</button><button class="btn sm ghost" data-act="unrev" data-id="${q.id}">外す</button>`)).join('')
+  $('#revList').innerHTML=list.length?list.map(q=>itemHTML(q,S.stats[q.id],null,`<button class="btn sm pri" data-act="tryOne" data-id="${q.id}">挑戦</button><button class="btn sm" data-act="edit" data-id="${q.id}">編集</button><button class="btn sm ghost" data-act="unrev" data-id="${q.id}">外す</button>`)).join('')
     :`<li class="muted">復習が必要な問題はありません。出題画面で解くと、射程内・大外れの問題がここに集まります。</li>`;
 }
 function rankData(subj){
@@ -1720,7 +1721,7 @@ function renderRank(){
   $('#subjTable').innerHTML=`<table><thead><tr><th>科目</th><th>解答数</th><th>平均近さ</th><th>合格率</th><th>平均時間</th><th>挑戦済み</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.s}</td><td>${r.n}</td><td class="${r.avg==null?'':r.avg>=80?'hi':r.avg<50?'lo':''}">${r.avg??'—'}</td><td>${r.pr==null?'—':r.pr+'%'}</td><td>${r.t==null?'—':r.t+'秒'}</td><td>${r.done}/${r.total}</td></tr>`).join('')}</tbody></table>`;
   subjChips('#rankSubj',rankSubj,'rankSubj');
   const data=rankData(rankSubj).slice(0,50);
-  $('#rankList').innerHTML=data.length?data.map((x,i)=>itemHTML(x.q,x.st,i+1,`<button class="btn sm pri" data-act="tryOne" data-id="${x.q.id}">挑戦</button>`)).join('')
+  $('#rankList').innerHTML=data.length?data.map((x,i)=>itemHTML(x.q,x.st,i+1,`<button class="btn sm pri" data-act="tryOne" data-id="${x.q.id}">挑戦</button><button class="btn sm" data-act="edit" data-id="${x.q.id}">編集</button>`)).join('')
     :`<li class="muted">まだ外れた問題がありません。出題画面で解くとランキングが作られます。</li>`;
 }
 function updBadge(){const n=revIds().length;$('#revBadge').textContent=n?String(n):'';}
@@ -1734,7 +1735,10 @@ function fillSelects(){
 }
 function fillLaw(){const s=$('#fSubj').value;$('#fLaw').innerHTML=LAWS_BY_SUBJ[s].map(l=>`<option>${l}</option>`).join('')+'<option value="__other">その他…</option>';$('#fLawOtherWrap').hidden=true;}
 function newId(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function addItems(items){for(const it of items)S.custom.push(it);rebuild();bag=[];touch();renderMyList();}
+function addItems(items,label){
+  const t=Date.now(),d=new Date(t);const bt='bt'+t.toString(36);
+  const btl=`${label||'追加'}　${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${pad2(d.getMinutes())}`;
+  for(const it of items){it.bt=bt;it.btl=btl;S.custom.push(it);}rebuild();bag=[];touch();renderMyList();}
 function makeItem(s,law,ty,p,a,n,src){const t=Date.now();return {id:newId(),s,law,ty,p,a:aCode(a),n:n||'',alt:'',src,ts:t,m:t};}
 function addOne(){
   const s=$('#fSubj').value;let law=$('#fLaw').value;if(law==='__other')law=$('#fLawOther').value.trim()||DEF_LAW[s];
@@ -1742,7 +1746,7 @@ function addOne(){
   const k=+toHalf($('#fK').value)||0,g=+toHalf($('#fG').value)||0;
   if(!p){toast('問題文を入力してください',true);return;}
   if(!art){toast('条の番号を正しく入力してください（例：94、37の2）',true);return;}
-  addItems([makeItem(s,law,$('#fType').value,p,{...art,k,g},$('#fN').value.trim(),'user')]);
+  addItems([makeItem(s,law,$('#fType').value,p,{...art,k,g},$('#fN').value.trim(),'user')],'1問追加');
   ['#fP','#fArt','#fK','#fG','#fN'].forEach(x=>$(x).value='');
   toast(`追加しました：${law} ${fmtA({...art,k,g})}`);
 }
@@ -1756,15 +1760,65 @@ function addBulk(){
     if(!subj||!p||!ans){bad.push(i+1);return;}
     ok.push(makeItem(subj,law||DEF_LAW[subj],TYPES.includes(ty)?ty:'KW',p,ans,n,'user'));
   });
-  if(ok.length)addItems(ok);
+  if(ok.length)addItems(ok,'一括追加');
   $('#bulkMsg').textContent=`${ok.length}件追加${bad.length?`、${bad.length}件は読めませんでした（${bad.slice(0,8).join('・')}行目）`:''}`;
   if(ok.length&&!bad.length)$('#bulk').value='';
 }
 function renderMyList(){
-  const mine=S.custom.filter(c=>!(S.del[c.id]>=(c.m||c.ts||0))).map(normCustom).filter(Boolean).reverse();
-  $('#myCount').textContent=mine.length?`${mine.length}問。出題画面に自動で混ざります。`:'まだありません。';
-  $('#myList').innerHTML=mine.slice(0,200).map(q=>itemHTML(q,S.stats[q.id],null,`<span class="tag ${q.src==='ai'?'u':''}">${q.src==='ai'?'AI抽出':'自作'}</span><button class="btn sm ghost" data-act="tryOne" data-id="${q.id}">挑戦</button><button class="btn sm danger" data-act="delItem" data-id="${q.id}" data-confirm="もう一度で削除">削除</button>`)).join('');
+  const live=S.custom.filter(c=>!(S.del[c.id]>=(c.m||c.ts||0)));
+  $('#myCount').textContent=live.length?`${live.length}問。出題画面に自動で混ざります。追加したまとまり（バッチ）ごとに削除できます。`:'まだありません。';
+  const groups=new Map();
+  for(const c of live.slice().reverse()){const k=c.bt||'_old';if(!groups.has(k))groups.set(k,{label:c.btl||'以前に追加した問題',items:[]});groups.get(k).items.push(c);}
+  let h='';
+  for(const [k,g] of groups){
+    const qs=g.items.map(normCustom).filter(Boolean);
+    h+=`<li class="batch"><div class="bhead"><b>${esc(g.label)}</b><span class="muted small">${qs.length}問</span><button class="btn sm danger" data-act="delBatch" data-bt="${esc(k)}" data-confirm="もう一度で${qs.length}問を削除">このバッチを削除</button></div>
+    <ol class="list">${qs.slice(0,150).map(q=>itemHTML(q,S.stats[q.id],null,`<span class="tag ${q.src==='ai'?'u':''}">${q.src==='ai'?'AI抽出':'自作'}</span><button class="btn sm ghost" data-act="tryOne" data-id="${q.id}">挑戦</button><button class="btn sm" data-act="edit" data-id="${q.id}">編集</button><button class="btn sm danger" data-act="delItem" data-id="${q.id}" data-confirm="もう一度で削除">削除</button>`)).join('')}${qs.length>150?`<li class="muted small">ほか${qs.length-150}問</li>`:''}</ol></li>`;
+  }
+  $('#myList').innerHTML=h;
 }
+function delBatch(bt){
+  const ids=S.custom.filter(c=>(c.bt||'_old')===bt).map(c=>c.id);const t=Date.now();
+  for(const id of ids){S.del[id]=t;delete S.stats[id];if(S.rv[id]!==undefined)setRev(id,false);}
+  S.custom=S.custom.filter(c=>!ids.includes(c.id));
+  rebuild();bag=[];touch();updBadge();renderMyList();toast(`${ids.length}問を削除しました`);
+}
+/* ---- カードの編集（収録問題・追加問題とも） ---- */
+let EDIT=null;
+function openEdit(id){
+  const q=IDX.get(id);if(!q)return;EDIT=id;
+  const laws=[...new Set([...(LAWS_BY_SUBJ[q.s]||[]),q.law])];
+  $('#editor').innerHTML=`<div class="edbox" role="dialog" aria-label="カードを編集">
+    <div class="vrow" style="justify-content:space-between"><h2>カードを編集</h2><span class="tag s">${esc(q.s)}</span></div>
+    <label class="f">問題文<textarea class="t" id="eP" rows="3">${esc(q.p)}</textarea></label>
+    <div class="grid2"><label class="f">法令<select class="t" id="eLaw">${laws.map(l=>`<option${l===q.law?' selected':''}>${esc(l)}</option>`).join('')}</select></label>
+    <label class="f">種別<select class="t" id="eTy">${TYPES.map(t=>`<option value="${t}"${t===q.ty?' selected':''}>${TL[t]}</option>`).join('')}</select></label></div>
+    <div class="grid3"><label class="f">条<input class="t" id="eArt" value="${esc(artStr(q.a))}" inputmode="decimal"></label><label class="f">項<input class="t" id="eK" value="${q.a.k||''}" inputmode="numeric" placeholder="なし"></label><label class="f">号<input class="t" id="eG" value="${q.a.g||''}" inputmode="numeric" placeholder="なし"></label></div>
+    <label class="f">別解（任意・「;」区切り　例：44;15,1,）<input class="t" id="eAlt" value="${esc(q.alts.map(aCode).join(';'))}"></label>
+    <label class="f">解説（任意）<input class="t" id="eN" value="${esc(q.n)}"></label>
+    <p class="err" id="eErr"></p>
+    <div class="acts">${q.src==='bank'&&S.ov[id]?'<button class="btn ghost" data-act="editReset">収録時の内容に戻す</button>':''}<button class="btn ghost" data-act="editClose">キャンセル</button><button class="btn go" data-act="editSave">保存</button></div></div>`;
+  $('#editor').hidden=false;setTimeout(()=>{const t=$('#eP');if(t&&matchMedia('(pointer:fine)').matches)t.focus();},0);
+}
+function closeEdit(){$('#editor').hidden=true;$('#editor').innerHTML='';EDIT=null;}
+function afterEdit(){
+  rebuild();touch();
+  if(cur&&cur.q.id===EDIT){cur.q=IDX.get(EDIT);if(cur.done){renderQuiz();}else{const t=document.querySelector('.qtext');if(t)t.textContent=ab(cur.q.p);}}
+  closeEdit();refreshCurrentView();
+}
+function saveEdit(){
+  const id=EDIT,q=IDX.get(id);if(!q)return closeEdit();
+  const p=$('#eP').value.trim(),art=parseArt($('#eArt').value);
+  if(!p){$('#eErr').textContent='問題文を入力してください';return;}
+  if(!art){$('#eErr').textContent='条の番号を正しく入力してください（例：94、37の2）';return;}
+  const a={...art,k:+toHalf($('#eK').value)||0,g:+toHalf($('#eG').value)||0};
+  const alt=$('#eAlt').value.split(/[;；]/).map(x=>parseLoose(x)).filter(Boolean).map(aCode).join(';');
+  const upd={p,law:$('#eLaw').value,ty:$('#eTy').value,a:aCode(a),n:$('#eN').value.trim(),alt,m:Date.now()};
+  if(q.src==='bank')S.ov[id]=upd;
+  else{const c=S.custom.find(x=>x.id===id);if(c)Object.assign(c,upd);}
+  afterEdit();toast('保存しました：'+fmtA(a));
+}
+function resetEdit(){const id=EDIT;S.ov[id]={m:Date.now()};afterEdit();toast('収録時の内容に戻しました');}
 function delItem(id){
   S.custom=S.custom.filter(c=>c.id!==id);S.del[id]=Date.now();delete S.stats[id];if(S.rv[id]!==undefined)setRev(id,false);
   rebuild();bag=[];touch();updBadge();renderMyList();toast('削除しました');
@@ -1814,7 +1868,7 @@ function renderAiRes(subj){
 function aiAdd(subj){
   const items=[];let bad=0;
   AIRES.forEach((x,i)=>{if(!$('#aiC'+i).checked)return;const a=parseLoose($('#aiA'+i).value);const p=$('#aiP'+i).value.trim();if(!a||!p){bad++;return;}items.push(makeItem(subj,$('#aiL'+i).value.trim()||DEF_LAW[subj],x.ty,p,a,$('#aiN'+i).value.trim(),'ai'));});
-  if(items.length)addItems(items);
+  if(items.length)addItems(items,'AI抽出');
   AIRES=[];$('#aiRes').innerHTML='';$('#aiMsg').textContent=`${items.length}件追加しました${bad?`（${bad}件は条文番号が読めず除外）`:''}`;
 }
 
@@ -1855,7 +1909,7 @@ function renderData(){
   $('#sRepo').value=S.sync.repo;$('#sTok').value=S.sync.token;$('#sAuto').checked=!!S.sync.auto;
   $('#syncOffBtn').hidden=!S.sync.repo;$('#artNote').hidden=!IN_ARTIFACT;
   $('#setAbbr').checked=!!S.settings.abbr;$('#setAnim').checked=!!S.settings.anim;$('#setPencil').checked=!!S.settings.pencil;
-  $('#exportBox').value=JSON.stringify({app:'jobun-sniper',v:1,exported:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del});
+  $('#exportBox').value=JSON.stringify({app:'jobun-sniper',v:1,exported:new Date().toISOString(),custom:S.custom,stats:S.stats,rv:S.rv,del:S.del,ov:S.ov});
   $('#verInfo').textContent=`条文スナイパー ${VERSION}・収録${BANK.length}問＋追加${Q.length-BANK.length}問`;
   renderRoppo();setSyncStat(S.sync.err?'err':'ok');
 }
@@ -1864,7 +1918,7 @@ function doImport(){
   if(!d||(d.app!=='jobun-sniper'&&d.app!=='jobunpro')){toast('条文スナイパーのバックアップではありません',true);return;}
   if(d.review&&!d.rv){d.rv={};for(const [id,t] of Object.entries(d.review))d.rv[id]=t;}
   const before=S.custom.length;
-  mergeRemote({custom:(d.custom||[]).map(c=>({...c,m:c.m||c.ts||1})),stats:d.stats,rv:d.rv,del:d.del});
+  mergeRemote({custom:(d.custom||[]).map(c=>({...c,m:c.m||c.ts||1})),stats:d.stats,rv:d.rv,del:d.del,ov:d.ov});
   rebuild();bag=[];touch();updBadge();$('#importBox').value='';
   toast(`読み込みました（問題${Math.max(0,S.custom.length-before)}件を追加）`);renderData();
 }
@@ -1941,6 +1995,11 @@ document.addEventListener('click',e=>{
     case 'addOne':addOne();break;
     case 'addBulk':addBulk();break;
     case 'delItem':if(armConfirm(b))delItem(b.dataset.id);break;
+    case 'delBatch':if(armConfirm(b))delBatch(b.dataset.bt);break;
+    case 'edit':openEdit(b.dataset.id);break;
+    case 'editSave':saveEdit();break;
+    case 'editClose':closeEdit();break;
+    case 'editReset':resetEdit();break;
     case 'copyPrompt':copyText(aiPrompt($('#pSubj').value,10));break;
     case 'aiRun':aiRun();break;
     case 'aiAdd':aiAdd(b.dataset.subj);break;
@@ -1967,6 +2026,7 @@ document.addEventListener('change',e=>{
   else if(t.id==='roppoFile'){PEND=[...t.files].map(f=>({file:f,law:guessLaw(f.name)}));t.value='';$('#roppoMsg').textContent=PEND.length?'法令を確認して「読み込む」を押してください。':'';renderRoppo();}
 });
 document.addEventListener('keydown',e=>{
+  if(!$('#editor').hidden){if(e.key==='Escape')closeEdit();return;}
   if(curView!=='quiz')return;
   const tag=(e.target.tagName||'').toLowerCase();
   if(e.key==='Enter'){
@@ -1977,7 +2037,7 @@ document.addEventListener('keydown',e=>{
   }
   if(tag==='input'||tag==='textarea'||tag==='select')return;
   if(cur&&!cur.done&&S.settings.artMode==='dial'){
-    if(/^[0-9]$/.test(e.key)){inp.d=[inp.d[1],inp.d[2],inp.d[3],+e.key];updDial();e.preventDefault();}
+    if(/^[0-9]$/.test(e.key)){inp.d=[Math.min(1,inp.d[1]),inp.d[2],inp.d[3],+e.key];updDial();e.preventDefault();}
     else if(e.key==='Backspace'){inp.d=[0,inp.d[0],inp.d[1],inp.d[2]];updDial();e.preventDefault();}
   }
 });
@@ -1996,5 +2056,4 @@ document.addEventListener('keydown',e=>{
 })();
 </script>
 
-</body>
-</html>
+</body></html>
